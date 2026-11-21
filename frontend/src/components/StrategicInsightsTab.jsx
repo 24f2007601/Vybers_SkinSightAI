@@ -1,212 +1,179 @@
-import { useState, useEffect } from "react";
+import React from "react";
 
 export default function StrategicInsightsTab({ product, insights }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [swot, setSWOT] = useState({});
-  const [marketGaps, setMarketGaps] = useState([]);
-  const [trendForecast, setTrendForecast] = useState({});
-  const [customerAcquisition, setCustomerAcquisition] = useState({});
-
-  useEffect(() => {
-    // Would fetch insights from API
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
-      setSWOT({
-        strengths: ["Dermatologically tested formulations", "Clean ingredients, no nasties", "Made for Indian skin"],
-        weaknesses: ["Premium pricing", "Limited distribution in tier-2 cities"],
-        opportunities: ["Growing demand for clean beauty", "Expansion into haircare"],
-        threats: ["Intense competition", "Raw material cost increases"],
-      });
-      setMarketGaps([
-        { description: "Hyaluronic acid serums in budget range", evidence: ["Customer requests"], potential_impact: "high", suggested_action: "Launch budget hyaluronic serum" },
-        { description: "Fragrance-free options for sensitive skin", evidence: ["Negative feedback on fragrance"], potential_impact: "medium", suggested_action: "Formulate fragrance-free variants" },
-      ]);
-      setTrendForecast({
-        category: "Skincare",
-        trend_direction: "rising",
-        trend_strength: 0.78,
-        key_drivers: ["Increased consciousness", "Social media influence"],
-        predicted_demand_change_pct: 12.5,
-        confidence: 0.82,
-      });
-      setCustomerAcquisition({
-        target_competitors: ["Minimalist", "The Derma Co"],
-        competitor_friction_points: {"Minimalist": ["beginner sting"], "The Derma Co": ["drying cleansers"]},
-        counter_positioning_claims: ["Dermatologically tested", "Made for Indian skin"],
-        customer_switcher_hooks: ["Try our trial size", "Switch and save 20%"],
-        whitespace_opportunities: ["Haircare", "Body care"],
-        price_arbitrage_angle: "Premium positioning against mid-range competitors",
-      });
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [product, insights]);
-
-  if (isLoading) {
+  if (!insights) {
     return (
-      <div className="min-h-[500px] flex items-center justify-center p-8">
-        <span className="text-[var(--color-muted)]">Loading strategic insights...</span>
+      <div className="nb-card p-10 text-center">
+        <p className="font-bold text-nb-muted">No insights data loaded.</p>
       </div>
     );
   }
 
+  const swot = insights.swot || { strengths: [], weaknesses: [], opportunities: [], threats: [] };
+  const gaps = insights.market_gaps || [];
+  const trend = insights.trend_forecast || {};
+  const acq = insights.customer_acquisition || {};
+
+  const SWOT_BLOCKS = [
+    { key: "strengths",    label: "💪 Strengths",    bg: "#4ADE80", textClass: "text-green-900" },
+    { key: "weaknesses",   label: "🔍 Weaknesses",   bg: "#FDE047", textClass: "text-yellow-900" },
+    { key: "opportunities",label: "🚀 Opportunities",bg: "#60A5FA", textClass: "text-blue-900" },
+    { key: "threats",      label: "⚡ Threats",       bg: "#F87171", textClass: "text-red-900" },
+  ];
+
   return (
     <div className="space-y-6">
-      {/* SWOT Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <h3 className="text-sm font-medium text-[var(--color-primary)] uppercase tracking-wider mb-3">Strengths</h3>
-          <ul className="space-y-2 text-sm">
-            {swot.strengths.map((s, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-                <span>{s}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
 
-        <div>
-          <h3 className="text-sm font-medium text-[var(--color-primary)] uppercase tracking-wider mb-3">Weaknesses</h3>
-          <ul className="space-y-2 text-sm">
-            {swot.weaknesses.map((w, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" strokeWidth="2">
-                  <path d="M6 2L3 6M6 2l3 6M2 6l6 6"/>
-                </svg>
-                <span>{w}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-medium text-[var(--color-primary)] uppercase tracking-wider mb-3">Opportunities</h3>
-          <ul className="space-y-2 text-sm">
-            {swot.opportunities.map((o, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" strokeWidth="2">
-                  <path d="M12 2v4l2 5h4l2-5h6l-5 2 5-2h4l-2 5h2l-5-2h-6l5-2-5 2H5z"/>
-                </svg>
-                <span>{o}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-medium text-[var(--color-primary)] uppercase tracking-wider mb-3">Threats</h3>
-          <ul className="space-y-2 text-sm">
-            {swot.threats.map((t, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2">
-                  <path d="M18 6L9 17l-5 5"/>
-                </svg>
-                <span>{t}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* Market Gaps */}
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-        <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Market Gaps Identified</h3>
-        <ul className="space-y-3 text-sm">
-          {marketGaps.map((gap, i) => (
-            <li key={i} className="flex items-start gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2">
-                <path d="M12 2v4l2 5h4l2-5h6l-5 2 5-2h4l-2 5h2l-5-2h-6l5-2-5 2H5z"/>
-              </svg>
-              <div>
-                <p className="font-medium">{gap.description}</p>
-                <p className="text-[var(--color-muted)] text-xs">{gap.suggested_action}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Trend Forecast */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div>
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Trend Direction</h3>
-          <p className="text-2xl font-bold text-[var(--color-primary)]">{trendForecast.trend_direction}</p>
-          <p className="text-sm text-[var(--color-muted)]">{trendForecast.trend_strength > 0.7 ? "Strong" : trendForecast.trend_strength > 0.4 ? "Moderate" : "Emerging"} trend</p>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Projected Demand Change</h3>
-          <p className="text-2xl font-bold {trendForecast.predicted_demand_change_pct > 0 ? 'text-[var(--color-primary)]' : 'text-[var(--color-teal)]'}">
-            {trendForecast.predicted_demand_change_pct > 0 ? '+' : ''}{trendForecast.predicted_demand_change_pct}%
-          </p>
-          <p className="text-sm text-[var(--color-muted)]">over next 90 days</p>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Confidence</h3>
-          <div className="h-4 w-24 bg-[var(--color-surface2)] rounded-full overflow-hidden">
+      {/* ── SWOT Grid ── */}
+      <div>
+        <div className="nb-section-label">Automated SWOT Matrix</div>
+        <div className="grid grid-cols-2 gap-4">
+          {SWOT_BLOCKS.map(({ key, label, bg, textClass }) => (
             <div
-              className="h-full bg-[var(--color-primary)] rounded-full transition-width"
-              style={{ width: `${trendForecast.confidence * 24}px` }}
-            ></div>
+              key={key}
+              className="p-5 border-2 border-black rounded-[10px]"
+              style={{ background: bg, boxShadow: "4px 4px 0 #000" }}
+            >
+              <div className="text-xs font-black mb-3 text-black">{label}</div>
+              <ul className="space-y-2">
+                {swot[key]?.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs font-medium text-black">
+                    <span className={`mt-0.5 w-4 h-4 flex-shrink-0 border-2 border-black bg-white rounded-nb flex items-center justify-center font-black text-[9px]`}>
+                      {i + 1}
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Customer Switcher Acquisition ── */}
+      <div
+        className="p-5 border-2 border-black rounded-[10px]"
+        style={{ background: "#C084FC", boxShadow: "4px 4px 0 #000" }}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <div className="nb-section-label">🎯 Weaponized Customer Switcher Strategy</div>
+          <span className="nb-badge-black text-[9px]">ACQUISITION ENGINE</span>
+        </div>
+
+        {/* Hooks */}
+        {acq.customer_switcher_hooks?.length > 0 && (
+          <div className="mb-4">
+            <div className="text-[9px] font-black uppercase tracking-widest text-black/50 mb-2">Switcher Hooks</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {acq.customer_switcher_hooks.map((hook, i) => (
+                <div
+                  key={i}
+                  className="border-2 border-black bg-white p-3 rounded-nb text-xs font-medium text-black"
+                  style={{ boxShadow: "2px 2px 0 #000" }}
+                >
+                  <span className="text-purple-700 font-black mr-1">🎯</span>"{hook}"
+                </div>
+              ))}
+            </div>
           </div>
-          <p className="text-xs text-[var(--color-muted)] ml-2">{Math.round(trendForecast.confidence * 100)}% confidence</p>
-        </div>
+        )}
+
+        {/* Price arbitrage */}
+        {acq.price_arbitrage_angle && (
+          <div
+            className="border-2 border-black bg-white p-3 rounded-nb text-xs font-bold text-black mb-4"
+            style={{ boxShadow: "2px 2px 0 #000" }}
+          >
+            <span className="font-black text-purple-700 mr-1">₹</span>
+            {acq.price_arbitrage_angle}
+          </div>
+        )}
+
+        {/* Competitor friction */}
+        {acq.competitor_friction_points && Object.keys(acq.competitor_friction_points).length > 0 && (
+          <div>
+            <div className="text-[9px] font-black uppercase tracking-widest text-black/50 mb-2">
+              Competitor Vulnerabilities Exploited
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {Object.entries(acq.competitor_friction_points).map(([comp, frictions], idx) => (
+                <div
+                  key={idx}
+                  className="border-2 border-black bg-white p-2.5 rounded-nb"
+                  style={{ boxShadow: "2px 2px 0 #000" }}
+                >
+                  <div className="font-black text-xs text-black mb-1">{comp}</div>
+                  <ul className="space-y-0.5">
+                    {(Array.isArray(frictions) ? frictions : [String(frictions)]).map((f, fi) => (
+                      <li key={fi} className="text-[10px] text-red-700 font-medium">⚠ {f}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Customer Acquisition Strategy */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Target Competitors</h3>
-          <ul className="space-y-2 text-sm">
-            {customerAcquisition.target_competitors.map((c, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-                <span>{c}</span>
-              </li>
+      {/* ── Market Gaps + Trend Forecast ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        {/* Market gaps */}
+        <div className="lg:col-span-2 nb-card p-5">
+          <div className="nb-section-label">Market Gaps & Tactical Actions</div>
+          <div className="space-y-3">
+            {gaps.map((gap, i) => (
+              <div
+                key={i}
+                className="border-2 border-black p-3 rounded-nb"
+                style={{ background: i % 2 === 0 ? "#F3F4F6" : "#fff", boxShadow: "2px 2px 0 #000" }}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-black text-xs text-black">{gap.description}</span>
+                  <span
+                    className={`nb-badge text-[9px] ${
+                      gap.potential_impact === "high" ? "nb-badge-red" : "nb-badge-blue"
+                    }`}
+                  >
+                    {gap.potential_impact} impact
+                  </span>
+                </div>
+                <p className="text-[11px] font-medium text-nb-muted">
+                  <span className="font-black text-black">→ </span>
+                  {gap.suggested_action}
+                </p>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Counter Positioning Claims</h3>
-          <ul className="space-y-2 text-sm">
-            {customerAcquisition.counter_positioning_claims.map((c, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-                <span>{c}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* Whitespace & Price Arbitrage */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Whitespace Opportunities</h3>
-          <ul className="space-y-2 text-sm">
-            {customerAcquisition.whitespace_opportunities.map((w, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" strokeWidth="2">
-                  <path d="M12 2v4l2 5h4l2-5h6l-5 2 5-2h4l-2 5h2l-5-2h-6l5-2-5 2H5z"/>
-                </svg>
-                <span>{w}</span>
-              </li>
-            ))}
-          </ul>
+        {/* Trend forecast */}
+        <div
+          className="p-5 border-2 border-black rounded-[10px] flex flex-col justify-between"
+          style={{ background: "#22D3EE", boxShadow: "4px 4px 0 #000" }}
+        >
+          <div>
+            <div className="nb-section-label">90-Day Demand Forecast</div>
+            <div className="text-5xl font-black text-black mt-2">
+              {trend.predicted_demand_change_pct > 0 ? `+${trend.predicted_demand_change_pct}%` : `${trend.predicted_demand_change_pct}%`}
+            </div>
+            <div className="text-xs font-bold text-black/60 mt-1">
+              {trend.category} · {trend.direction}
+            </div>
+            <ul className="mt-3 space-y-1">
+              {trend.key_drivers?.map((d, di) => (
+                <li key={di} className="text-[11px] font-medium text-black flex items-center gap-1">
+                  <span className="font-black">↗</span> {d}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="pt-3 mt-3 border-t-2 border-black flex justify-between text-[11px] font-black text-black">
+            <span>Confidence</span>
+            <span>{Math.round((trend.confidence || 0.75) * 100)}%</span>
+          </div>
         </div>
 
-        <div>
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Price Arbitrage Angle</h3>
-          <p className="font-medium text-[var(--color-primary)]">{customerAcquisition.price_arbitrage_angle}</p>
-        </div>
       </div>
     </div>
   );

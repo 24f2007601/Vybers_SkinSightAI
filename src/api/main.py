@@ -27,7 +27,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Configure CORS for React frontend (Vite default is 5173, Next/CRA is 3000)
+# Configure CORS: explicit whitelist instead of wildcard '*'
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -35,10 +35,9 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "*",
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -172,14 +171,31 @@ def _serialize_content_deck(product: Product, insights: MarketInsights) -> dict:
 # ---------------------------------------------------------------------------
 
 @app.get("/")
+@app.get("/health")
 async def root():
-    """Health check & API documentation link"""
+    """Health check endpoint"""
     return {
+        "status": "healthy",
         "service": "VYBERS SkinSight-AI API",
-        "status": "online",
         "docs_url": "/docs",
         "brand": "Dot & Key",
         "timestamp": datetime.now().isoformat(),
+    }
+
+
+@app.get("/v1/models")
+async def get_models_mock():
+    """Fallback handler for IDE/AI plugin probes querying OpenAI-compatible models"""
+    return {
+        "object": "list",
+        "data": [
+            {
+                "id": "skinsight-v1",
+                "object": "model",
+                "created": int(datetime.now().timestamp()),
+                "owned_by": "vybers-skinsight",
+            }
+        ],
     }
 
 

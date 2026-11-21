@@ -1,30 +1,27 @@
-import { Link } from "react-router-dom";
+import React from "react";
 
 export default function Navbar() {
   return (
-    <nav className="bg-[var(--color-cream)] border-b border-[var(--color-border)] sticky top-0 z-50">
-      <div className="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-[var(--color-primary)]">Dot & Key</span>
-            <span className="text-base text-[var(--color-muted)]">Clean. Conscious. Effective.</span>
-          </Link>
+          <div className="w-8 h-8 rounded-lg bg-pink-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+            D&K
+          </div>
+          <div>
+            <span className="text-base font-bold text-gray-900 tracking-tight">Dot & Key</span>
+            <span className="text-xs text-gray-500 block leading-none mt-0.5">SkinSight-AI Intelligence Engine</span>
+          </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-8">
-          <Link to="/products" className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors font-medium">Products</Link>
-          <Link to="/insights" className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors font-medium">Insights</Link>
-          <Link to="/content" className="text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors font-medium">Content Studio</Link>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            FastAPI Connected
+          </span>
+          <span className="text-xs text-gray-400 hidden sm:inline">Port 8000</span>
         </div>
-
-        <button className="md:hidden flex items-center gap-2 p-2 hover:bg-[var(--color-surface)] rounded-lg transition-colors" aria-label="Open menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
       </div>
-    </nav>
+    </header>
   );
 }

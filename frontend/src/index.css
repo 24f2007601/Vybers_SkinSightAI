@@ -1,40 +1,113 @@
-/* Tailwind base styles */
 @tailwind base;
-
-/* Tailwind components */
 @tailwind components;
-
-/* Tailwind utilities */
 @tailwind utilities;
 
-/* Custom properties for design tokens */
-:root {
-  --color-primary: #E85D75;
-  --color-cream: #F5F0EB;
-  --color-teal: #4A90A4;
-  --color-background: #FFFFFF;
-  --color-surface: #FFF5FA;
-  --color-surface2: #E8E8E8;
-  --color-border: #E5E5E5;
-  --color-muted: #1A1A1A;
-  --color-text: #2D2D2D;
-  --color-primary-hover: #FF6B8A;
-  --color-primary-pressed: #FF4081;
+@layer base {
+  html, body {
+    background-color: #E8E8E8;
+    color: #000000;
+    font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #E8E8E8; }
+  ::-webkit-scrollbar-thumb { background: #000; }
 }
 
-/* Focus ring state */
-:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
+@layer components {
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  /* ── Neobrutalism Core ── */
+
+  .nb-card {
+    @apply bg-white border-2 border-black rounded-[10px];
+    box-shadow: 4px 4px 0px 0px #000;
+  }
+
+  .nb-btn {
+    @apply inline-flex items-center justify-center gap-2 font-bold border-2 border-black
+           rounded-lg cursor-pointer select-none;
+    box-shadow: 4px 4px 0px 0px #000;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .nb-btn:hover  { transform: translate(2px, 2px);  box-shadow: 2px 2px 0px 0px #000; }
+  .nb-btn:active { transform: translate(4px, 4px);  box-shadow: 0px 0px 0px 0px #000; }
+
+  .nb-btn-primary {
+    @apply nb-btn bg-nb-pink text-white px-4 py-2 text-sm;
+  }
+  .nb-btn-yellow {
+    @apply nb-btn bg-nb-yellow text-black px-4 py-2 text-sm;
+  }
+  .nb-btn-ghost {
+    @apply nb-btn bg-white text-black px-4 py-2 text-sm;
+  }
+
+  .nb-input {
+    @apply w-full px-3.5 py-2.5 bg-white text-black font-medium border-2 border-black rounded-nb
+           placeholder:text-gray-400 focus:outline-none;
+    box-shadow: 4px 4px 0px 0px #000;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .nb-input:focus { transform: translate(2px, 2px); box-shadow: 2px 2px 0px 0px #000; }
+
+  .nb-badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-bold border-2 border-black rounded-nb;
+    box-shadow: 2px 2px 0px 0px #000;
+  }
+  .nb-badge-pink   { @apply nb-badge bg-nb-pink text-white; }
+  .nb-badge-yellow { @apply nb-badge bg-nb-yellow text-black; }
+  .nb-badge-green  { @apply nb-badge bg-nb-green text-black; }
+  .nb-badge-red    { @apply nb-badge bg-nb-red text-black; }
+  .nb-badge-blue   { @apply nb-badge bg-nb-blue text-black; }
+  .nb-badge-black  { @apply nb-badge bg-black text-white; }
+
+  .nb-table {
+    @apply w-full border-2 border-black rounded-[10px] overflow-hidden;
+    box-shadow: 4px 4px 0px 0px #000;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .nb-table th {
+    @apply bg-black text-white text-[10px] font-bold uppercase tracking-widest px-4 py-3 text-left;
+    border-bottom: 2px solid #000;
+  }
+  .nb-table td {
+    @apply px-4 py-3 border-b-2 border-black bg-white text-sm;
+  }
+  .nb-table tr:last-child td { border-bottom: none; }
+  .nb-table tr:nth-child(even) td { @apply bg-gray-50; }
+  .nb-table tr:hover td { @apply bg-nb-pink-light transition-colors duration-100; }
+
+  .nb-section-label {
+    @apply text-[10px] font-black uppercase tracking-widest text-nb-muted pb-1 mb-3;
+    border-bottom: 2px solid #000;
+  }
+
+  .nb-stat {
+    @apply nb-card p-5;
+  }
+  .nb-stat-value { @apply text-4xl font-black text-black leading-none; }
+  .nb-stat-label { @apply text-[10px] font-bold uppercase tracking-wider text-nb-muted mt-1; }
+
+  .nb-alert {
+    @apply flex items-start gap-3 p-4 border-2 border-black rounded-[10px];
+    box-shadow: 4px 4px 0px 0px #000;
+  }
+  .nb-alert-info    { @apply nb-alert bg-nb-blue text-black; }
+  .nb-alert-success { @apply nb-alert bg-nb-green text-black; }
+  .nb-alert-warning { @apply nb-alert bg-nb-yellow text-black; }
+  .nb-alert-error   { @apply nb-alert bg-nb-red text-black; }
+
+  .nb-progress-track {
+    @apply w-full h-5 border-2 border-black rounded-full overflow-hidden;
+    box-shadow: 2px 2px 0px 0px #000;
+    background: #E5E7EB;
+  }
+  .nb-progress-fill {
+    @apply h-full border-r-2 border-black rounded-full;
+    background: #FDE047;
+    transition: width 0.4s ease;
   }
 }

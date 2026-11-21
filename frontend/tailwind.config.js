@@ -1,50 +1,38 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        primary: '#E85D75',
-        cream: '#F5F0EB',
-        teal: '#4A90A4',
-        background: '#FFFFFF',
-        surface: '#FFF5FA',
-        surface2: '#E8E8E8',
-        border: '#E5E5E5',
-        muted: '#1A1A1A',
-        text: '#2D2D2D',
-      },
-      fontFamily: {
-        poppins: ['Poppins', 'sans-serif'],
-      },
-      borderRadius: {
-        sm: '3px',
-        md: '5px',
-        lg: '6px',
-        xl: '8px',
-        '2xl': '10px',
-        '3xl': '12px',
-        '4xl': '13px',
-        '5xl': '16px',
-        full: '999px',
+        nb: {
+          bg:     '#E8E8E8',
+          card:   '#FFFFFF',
+          yellow: '#FDE047',
+          orange: '#FB923C',
+          red:    '#F87171',
+          pink:   '#FF4081',
+          'pink-light': '#FFD6E5',
+          purple: '#C084FC',
+          blue:   '#60A5FA',
+          cyan:   '#22D3EE',
+          green:  '#4ADE80',
+          lime:   '#A3E635',
+          text:   '#000000',
+          muted:  '#555555',
+        },
       },
       boxShadow: {
-        sm: '0 1px 3px #0000001a, 0 1px 2px #0000000f',
-        md: '0 1px 4px #00000040',
-        lg: '0 2px 10px #0000001a',
+        nb:        '4px 4px 0px 0px #000000',
+        'nb-sm':   '2px 2px 0px 0px #000000',
+        'nb-lg':   '6px 6px 0px 0px #000000',
+        'nb-xl':   '8px 8px 0px 0px #000000',
+        'nb-pink': '4px 4px 0px 0px #FF4081',
       },
-      transitionDuration: {
-        DEFAULT: '150ms',
-        200: '200ms',
-        300: '300ms',
+      borderRadius: {
+        nb: '5px',
       },
-      transitionTimingFunction: {
-        ease: 'ease',
-        cubic: 'cubic-bezier(.4,0,.2,1)',
-        easeOut: 'cubic-bezier(.22,1,.36,1)',
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
       },
     },
   },

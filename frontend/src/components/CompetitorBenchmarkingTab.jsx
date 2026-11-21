@@ -1,179 +1,126 @@
-import { useState, useEffect } from "react";
+import React from "react";
 
-export default function CompetitorBenchmarkingTab({ product }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    // Would fetch competitor data from API
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [product]);
-
-  if (isLoading) {
+export default function CompetitorBenchmarkingTab({ product, comparison }) {
+  if (!comparison) {
     return (
-      <div className="min-h-[400px] flex items-center justify-center p-8">
-        <span className="text-[var(--color-muted)]">Loading competitor data...</span>
+      <div className="nb-card p-10 text-center">
+        <p className="font-bold text-nb-muted">No competitor benchmark data for this SKU.</p>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-[400px] flex items-center justify-center p-8">
-        <span className="text-red-500">Error: {error}</span>
-      </div>
-    );
-  }
+  const { price_comparison = {}, competitive_advantages = [], competitive_gaps = [], competitors = [] } = comparison;
+  const dkPrice = price_comparison["Dot & Key"] || 0;
+  const others = Object.entries(price_comparison).filter(([brand]) => brand !== "Dot & Key");
 
   return (
     <div className="space-y-6">
-      {/* Unit Economics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Unit Economics</h3>
-          <div className="space-y-3">
-            <div>
-              <span className="text-[var(--color-text)] font-medium">Dot & Key:</span>
-              <span className="text-[var(--color-primary)] font-large">Rs. 3.95/ml</span>
-            </div>
-            <div>
-              <span className="text-[var(--color-text)] font-medium">Minimalist:</span>
-              <span className="text-[var(--color-teal)] font-large">Rs. 4.20/ml</span>
-            </div>
-            <div>
-              <span className="text-[var(--color-text)] font-medium">The Derma Co:</span>
-              <span className="text-[var(--color-teal)] font-large">Rs. 3.80/ml</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Rating Comparison</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span>Dot & Key</span>
-              <span className="text-[var(--color-primary)]">4.4 ⭐</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span>Minimalist</span>
-              <span className="text-[var(--color-teal)]">4.2 ⭐</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span>The Derma Co</span>
-              <span className="text-[var(--color-teal)]">4.3 ⭐</span>
-            </div>
+      {/* ── Unit Economics Cards ── */}
+      <div>
+        <div className="nb-section-label">Normalized Unit Economics (₹ / ml)</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+          {/* Dot & Key — pink */}
+          <div
+            className="p-5 border-2 border-black rounded-[10px]"
+            style={{ background: '#FF4081', boxShadow: '4px 4px 0 #000' }}
+          >
+            <div className="text-[9px] font-black uppercase tracking-widest text-white/70 mb-2">DOT & KEY</div>
+            <div className="text-4xl font-black text-white">₹{dkPrice}</div>
+            <div className="text-[10px] font-bold text-white/60 mt-1">per ml · OUR SKU</div>
           </div>
+
+          {/* Competitors */}
+          {others.slice(0, 3).map(([brand, price]) => {
+            const diff = ((price - dkPrice) / (dkPrice || 1) * 100).toFixed(0);
+            const isMore = price > dkPrice;
+            return (
+              <div key={brand} className="nb-card p-5">
+                <div className="text-[9px] font-black uppercase tracking-widest text-nb-muted mb-2 truncate">{brand}</div>
+                <div className="text-4xl font-black text-black">₹{price}</div>
+                <span className={`nb-badge mt-2 text-[9px] ${isMore ? 'nb-badge-green' : 'nb-badge-red'}`}>
+                  {isMore ? `+${diff}% costlier` : `${diff}% cheaper`}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Ingredient Badges Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Shared Ingredients</h3>
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-2 px-2 py-1 bg-[var(--color-cream)] rounded text-[var(--color-text)] text-sm">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2v4l2 5h4l2-5h6l-5 2 5-2h4l-2 5h2l-5-2h-6l5-2-5 2H5z"/>
-              </svg>
-              Hydrating agents
-            </span>
-            <span className="inline-flex items-center gap-2 px-2 py-1 bg-[var(--color-cream)] rounded text-[var(--color-text)] text-sm">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2v4l2 5h4l2-5h6l-5 2 5-2h4l-2 5h2l-5-2h-6l5-2-5 2H5z"/>
-              </svg>
-              Brightening actives
-            </span>
-          </div>
+      {/* ── Competitor Table ── */}
+      <div>
+        <div className="nb-section-label">
+          Top Benchmark Competitors ({competitors.length} tracked)
         </div>
-
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Unique Ingredients</h3>
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-2 px-2 py-1 bg-[var(--color-primary)] rounded text-[var(--color-white)] text-sm">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2v4l2 5h4l2-5h6l-5 2 5-2h4l-2 5h2l-5-2h-6l5-2-5 2H5z"/>
-              </svg>
-              Ceramide Complex
-            </span>
-            <span className="inline-flex items-center gap-2 px-2 py-1 bg-[var(--color-primary)] rounded text-[var(--color-white)] text-sm">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2v4l2 5h4l2-5h6l-5 2 5-2h4l-2 5h2l-5-2h-6l5-2-5 2H5z"/>
-              </svg>
-              Bakuchiol
-            </span>
-          </div>
-        </div>
+        <table className="nb-table w-full">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Brand & Product</th>
+              <th>Price (INR)</th>
+              <th>Volume</th>
+              <th>Rating</th>
+              <th>Reviews</th>
+            </tr>
+          </thead>
+          <tbody>
+            {competitors.map((comp, idx) => (
+              <tr key={idx}>
+                <td className="font-black text-nb-muted text-xs">{idx + 1}</td>
+                <td>
+                  <div className="font-bold text-xs">{comp.brand}</div>
+                  <div className="text-[10px] text-nb-muted mt-0.5 line-clamp-1">{comp.product_name}</div>
+                </td>
+                <td><span className="font-black text-sm">₹{comp.price_inr}</span></td>
+                <td className="text-xs font-medium text-nb-muted">{comp.size_ml}ml</td>
+                <td>
+                  <span className="nb-badge-yellow text-[10px]">★ {comp.rating}</span>
+                </td>
+                <td className="text-xs font-bold">{comp.review_count?.toLocaleString() ?? "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Advantages/Gaps Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Competitive Advantages</h3>
-          <ul className="space-y-2 text-sm">
-            <li className="flex items-start gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-              <span>Dermatologically tested formulations</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-              <span>Clean ingredients, no nasties</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-              <span>Made for Indian skin</span>
-            </li>
+      {/* ── Advantages & Gaps ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div
+          className="p-5 border-2 border-black rounded-[10px]"
+          style={{ background: '#4ADE80', boxShadow: '4px 4px 0 #000' }}
+        >
+          <div className="nb-section-label">✅ Competitive Advantages</div>
+          <ul className="space-y-2">
+            {competitive_advantages.map((adv, i) => (
+              <li key={i} className="flex items-start gap-2 text-xs font-medium text-black">
+                <span className="mt-0.5 w-4 h-4 flex-shrink-0 border-2 border-black bg-white rounded-nb flex items-center justify-center font-black text-[9px]">
+                  {i + 1}
+                </span>
+                {adv}
+              </li>
+            ))}
           </ul>
         </div>
 
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Market Gaps</h3>
-          <ul className="space-y-2 text-sm">
-            <li className="flex items-start gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" strokeWidth="2">
-                <path d="M12 2v4l2 5h4l2-5h6l-5 2 5-2h4l-2 5h2l-5-2h-6l5-2-5 2H5z"/>
-              </svg>
-              <span>Missing hyaluronic acid serums in budget range</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" strokeWidth="2">
-                <path d="M12 2v4l2 5h4l2-5h6l-5 2 5-2h4l-2 5h2l-5-2h-6l5-2-5 2H5z"/>
-              </svg>
-              <span>Fragrance-free options for sensitive skin</span>
-            </li>
+        <div
+          className="p-5 border-2 border-black rounded-[10px]"
+          style={{ background: '#FDE047', boxShadow: '4px 4px 0 #000' }}
+        >
+          <div className="nb-section-label">⚠ Market Gaps to Address</div>
+          <ul className="space-y-2">
+            {competitive_gaps.map((gap, i) => (
+              <li key={i} className="flex items-start gap-2 text-xs font-medium text-black">
+                <span className="mt-0.5 w-4 h-4 flex-shrink-0 border-2 border-black bg-white rounded-nb flex items-center justify-center font-black text-[9px]">
+                  {i + 1}
+                </span>
+                {gap}
+              </li>
+            ))}
           </ul>
         </div>
-
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-3">Price/ML Analysis</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span>Dot & Key Face Wash</span>
-              <span>Rs. 3.95/ml</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span>Minimalist Face Wash</span>
-              <span>Rs. 4.20/ml</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span>The Derma Co Face Wash</span>
-              <span>Rs. 3.80/ml</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span>Plum Face Wash</span>
-              <span>Rs. 4.50/ml</span>
-            </div>
-          </div>
-        </div>
       </div>
+
     </div>
   );
 }
