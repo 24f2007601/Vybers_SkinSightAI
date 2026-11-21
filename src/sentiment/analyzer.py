@@ -21,6 +21,7 @@ from ..data.loader import (
     SAMPLE_DOTKEY_PRODUCTS,
     SAMPLE_COMPETITOR_PRODUCTS,
 )
+from ..competitor.monitor import CompetitorMonitor
 
 vader_analyzer = SentimentIntensityAnalyzer()
 
@@ -83,15 +84,18 @@ class SentimentAnalyzer:
         return topics
 
     def _extract_key_phrases(self, text: str) -> list[str]:
+        # Extract the core attribute mentioned after the colon, e.g. "I really loved this: rich body butters."
+        m = re.search(r":\s*([a-zA-Z\s\-]{3,40})\.", text, re.IGNORECASE)
+        if m:
+            clean = m.group(1).strip()
+            if clean and clean.lower() not in ["this", "that"]:
+                return [clean]
+
         phrases = []
         patterns = [
-            r"(?:really|very|super|extremely|quite)\s+(\w+\s+\w+)",
-            r"(?:love|hate|like|dislike)\s+(?:the|my|this|that)?\s*(\w+\s+\w+)",
             r"(?:best|worst|great|amazing|terrible|awful)\s+(\w+\s+\w+)",
-            r"(\w+\s+\w+)\s+(?:is|was)\s+(?:great|good|amazing|terrible|bad|okay)",
-            r":\s*([a-zA-Z\s\-]{4,35})\.",
+            r"(\w+\s+\w+)\s+(?:is|was)\s+(?:great|good|amazing|terrible|bad)",
         ]
-
         for pattern in patterns:
             matches = re.findall(pattern, text, re.IGNORECASE)
             phrases.extend(matches)
@@ -144,12 +148,17 @@ class SentimentAnalyzer:
         for review in negative_reviews:
             if review.key_phrases:
                 all_phrases.extend(review.key_phrases)
-            elif review.title:
-                all_phrases.append(review.title)
 
-        counts = Counter(all_phrases)
-        top = [p for p, _ in counts.most_common(5)]
-        return top or ["fragrance irritation", "white cast on deep skin"]
+        # Deduplicate preserving order
+        seen = set()
+        deduped = []
+        for p in all_phrases:
+            p_clean = p.lower()
+            if p_clean not in seen:
+                seen.add(p_clean)
+                deduped.append(p)
+
+        return deduped[:5] or ["fragrance irritation", "greasy finish under humidity"]
 
     def _extract_praises(self, reviews: list[Review]) -> list[str]:
         positive_reviews = [r for r in reviews if r.sentiment == SentimentLabel.POSITIVE or r.rating >= 4]
@@ -157,19 +166,25 @@ class SentimentAnalyzer:
         for review in positive_reviews:
             if review.key_phrases:
                 all_phrases.extend(review.key_phrases)
-            elif review.title:
-                all_phrases.append(review.title)
 
-        counts = Counter(all_phrases)
-        top = [p for p, _ in counts.most_common(5)]
-        return top or ["lightweight non-greasy absorption", "instant hydration", "soothing skin barrier"]
+        # Deduplicate preserving order
+        seen = set()
+        deduped = []
+        for p in all_phrases:
+            p_clean = p.lower()
+            if p_clean not in seen:
+                seen.add(p_clean)
+                deduped.append(p)
+
+        return deduped[:5] or ["lightweight non-sticky absorption", "instant plumping hydration", "barrier-friendly soothing feel"]
 
 
 class ReviewCollector:
-    """Collects customer reviews for a given product or brand dynamically"""
+    """Collects customer reviews dynamically based on matched competitors and product category"""
 
     def __init__(self, use_sample_data: bool = True):
         self.use_sample_data = use_sample_data
+        self.competitor_monitor = CompetitorMonitor(use_sample_data)
 
     async def collect_reviews(
         self,
@@ -180,38 +195,26 @@ class ReviewCollector:
         return self._get_sample_reviews(product)
 
     def _get_sample_reviews(self, product: Product | CompetitorProduct) -> list[Review]:
-        """Dynamically retrieve reviews relevant to the product category, formulation, and brand"""
+        """Dynamically retrieve reviews from competitors benchmarked for THIS specific product"""
         name = getattr(product, "name", getattr(product, "product_name", "")).lower()
         category = getattr(product, "category", "").lower()
-        ingredients = [i.lower() for i in getattr(product, "ingredients", [])]
+
+        # Find the specific benchmarked competitors for this SKU
+        comp_result = self.competitor_monitor._get_sample_competitors(product, max_competitors=5)
+        competitor_brands = set(c.brand for c in comp_result.competitors)
 
         matched = []
 
-        # Categorical review keywords
-        is_sun = any(k in category or k in name for k in ["sun", "spf"])
-        is_wash = any(k in category or k in name for k in ["wash", "cleanse", "shower"])
-        is_lip = any(k in category or k in name for k in ["lip", "balm"])
-        is_serum = any(k in category or k in name for k in ["serum", "cica", "salicylic", "vitamin c"])
-
+        # 1. Grab reviews specifically for the matched benchmark rival brands
         for r in SAMPLE_REVIEWS:
-            r_text = (r.title + " " + r.text).lower()
-
-            if is_sun and any(k in r_text for k in ["sun", "cast", "greasy", "protection", "sweat"]):
-                matched.append(r)
-            elif is_wash and any(k in r_text for k in ["wash", "clean", "drying", "foam", "stripping"]):
-                matched.append(r)
-            elif is_lip and any(k in r_text for k in ["lip", "shade", "dry", "moistur", "chapped"]):
-                matched.append(r)
-            elif is_serum and any(k in r_text for k in ["serum", "sting", "glow", "acne", "dark spot", "active"]):
-                matched.append(r)
-            elif any(ing in r_text for ing in ingredients):
+            if r.product_id in competitor_brands:
                 matched.append(r)
 
-        # Include Dot & Key verified feedback
+        # 2. Add Dot & Key category specific reviews
         dk_reviews = [r for r in SAMPLE_REVIEWS if r.product_id.lower() in ("dot & key", "dot and key")]
         matched.extend(dk_reviews)
 
-        # Return unique by review id
+        # Deduplicate by review ID
         seen_ids = set()
         deduped = []
         for r in matched:
@@ -219,4 +222,4 @@ class ReviewCollector:
                 seen_ids.add(r.id)
                 deduped.append(r)
 
-        return deduped[:20] if deduped else SAMPLE_REVIEWS[:15]
+        return deduped[:25] if deduped else SAMPLE_REVIEWS[:15]
