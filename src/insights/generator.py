@@ -10,13 +10,17 @@ from typing import Optional
 
 import numpy as np
 
-from ..models import (
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from models import (
     Product, CompetitorProduct, SentimentAnalysis, CompetitorComparison,
     SWOTAnalysis, MarketGap, TrendForecast, MarketGap, SAMPLE_DOTKEY_PRODUCTS,
     SAMPLE_COMPETITOR_PRODUCTS, SAMPLE_REVIEWS
 )
-from ..sentiment.analyzer import SentimentAnalyzer, ReviewCollector
-from ..competitor.monitor import CompetitorMonitor, CompetitorComparator
+from sentiment.analyzer import SentimentAnalyzer, ReviewCollector
+from competitor.monitor import CompetitorMonitor, CompetitorComparator
 
 
 @dataclass

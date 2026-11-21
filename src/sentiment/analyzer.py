@@ -14,7 +14,11 @@ import numpy as np
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-from ..models import (
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from models import (
     Review, SentimentAnalysis, SentimentLabel, Product, CompetitorProduct,
     SAMPLE_REVIEWS
 )
@@ -230,7 +234,7 @@ class ReviewCollector:
 
 
 async def main():
-    from ..models import SAMPLE_DOTKEY_PRODUCTS, SAMPLE_COMPETITOR_PRODUCTS
+    from models import SAMPLE_DOTKEY_PRODUCTS, SAMPLE_COMPETITOR_PRODUCTS
 
     analyzer = SentimentAnalyzer(use_sample_data=True)
     collector = ReviewCollector(use_sample_data=True)
