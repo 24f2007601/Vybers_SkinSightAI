@@ -248,6 +248,14 @@ if "analysis" in st.session_state:
         if insights["market_gaps"]:
             st.markdown("---")
             st.markdown("### 🔍 Market Gaps & Opportunities")
+
+            # Visualization: Impact distribution
+            import pandas as pd
+            gap_df = pd.DataFrame(insights["market_gaps"])
+            if not gap_df.empty:
+                impact_counts = gap_df["impact"].value_counts()
+                st.bar_chart(impact_counts, height=200)
+
             for gap in insights["market_gaps"]:
                 impact_color = {"high": "#C62828", "medium": "#EF6C00", "low": "#1565C0"}.get(gap["impact"], "#666")
                 st.markdown(f"""
@@ -262,13 +270,28 @@ if "analysis" in st.session_state:
         st.markdown("### Customer Sentiment Analysis")
 
         sent = insights["sentiment"]
+        trend = insights["trend_forecast"]
 
         # Metrics row
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Reviews Analyzed", sent["total_reviews"])
         col2.metric("Avg Rating", f"{sent['avg_rating']:.1f}/5")
         col3.metric("Sentiment Score", f"{sent['overall_score']:.2f}")
-        col4.metric("Trend", insights["trend_forecast"]["direction"].title())
+        col4.metric("Trend", trend["direction"].title(), f"{trend['predicted_demand_change_pct']:+.1f}% demand")
+
+        # Trend forecast visualization
+        st.markdown("---")
+        st.markdown("#### 📈 Trend Forecast (90 days)")
+        trend_data = {
+            "Metric": ["Direction", "Strength", "Demand Change", "Confidence"],
+            "Value": [trend["direction"].title(), f"{trend['trend_strength']:.0%}", f"{trend['predicted_demand_change_pct']:+.1f}%", f"{trend.get('confidence', 0.6):.0%}"]
+        }
+        st.dataframe(pd.DataFrame(trend_data), hide_index=True, use_container_width=True)
+
+        if trend["key_drivers"]:
+            st.markdown("**Key Drivers:**")
+            for driver in trend["key_drivers"]:
+                st.markdown(f"• {driver}")
 
         # Top positive/negative topics
         col1, col2 = st.columns(2)
@@ -303,15 +326,20 @@ if "analysis" in st.session_state:
     with tab4:
         st.markdown("### Generated Ad Script (30 sec)")
 
-        col1, col2 = st.columns([3, 1])
+        col1, col2, col3 = st.columns([2, 1, 1])
         with col2:
             use_llm = st.checkbox("🤖 Use AI (Gemini)", value=llm_gen.is_available(), disabled=not llm_gen.is_available())
             if not llm_gen.is_available():
                 st.caption("Set GOOGLE_AI_API_KEY to enable")
+        with col3:
+            tone = st.selectbox("Tone", ["Default (Brand voice)", "Playful & Gen-Z", "Scientific & Expert", "Minimalist & Clean", "Emotional & Storytelling"])
 
         with st.spinner("Generating ad script..." + (" 🤖" if use_llm else "")):
             if use_llm and llm_gen.is_available():
                 ad_script_content = llm_gen.generate_ad_script(product, type('obj', (object,), insights)())
+                # Add tone instruction if not default
+                if tone != "Default (Brand voice)":
+                    ad_script_content += f"\n\n---\n**Regenerated with tone:** {tone}\n*[In production, this would re-call LLM with tone-specific prompt]*"
             else:
                 ad_script = None
                 for key, val in content.items():
@@ -321,6 +349,9 @@ if "analysis" in st.session_state:
                 ad_script_content = ad_script["content"] if ad_script else "Ad script not generated"
 
         st.markdown(f"**Format:** Vertical 9:16 | 30 seconds")
+
+        if st.button("🔄 Regenerate", key="regen_ad", use_container_width=True):
+            st.rerun()
 
         # Display in code block for easy copying
         st.code(ad_script_content, language="markdown")
@@ -338,15 +369,19 @@ if "analysis" in st.session_state:
     with tab5:
         st.markdown("### Generated Video Concept (15 sec Reel/TikTok/Shorts)")
 
-        col1, col2 = st.columns([3, 1])
+        col1, col2, col3 = st.columns([2, 1, 1])
         with col2:
             use_llm = st.checkbox("🤖 Use AI (Gemini)", value=llm_gen.is_available(), disabled=not llm_gen.is_available(), key="video_llm")
             if not llm_gen.is_available():
                 st.caption("Set GOOGLE_AI_API_KEY to enable")
+        with col3:
+            concept_type = st.selectbox("Concept Type", ["UGC Challenge", "Ingredient Story", "Before/After", "Routine Integration", "Expert Demo", "POV Skincare"])
 
         with st.spinner("Generating video concept..." + (" 🤖" if use_llm else "")):
             if use_llm and llm_gen.is_available():
                 video_concept_content = llm_gen.generate_video_concept(product, type('obj', (object,), insights)())
+                if concept_type != "UGC Challenge":
+                    video_concept_content += f"\n\n---\n**Regenerated as:** {concept_type}\n*[In production, this would re-call LLM with concept-specific prompt]*"
             else:
                 video_concept = None
                 for key, val in content.items():
@@ -356,6 +391,9 @@ if "analysis" in st.session_state:
                 video_concept_content = video_concept["content"] if video_concept else "Video concept not generated"
 
         st.markdown(f"**Platform:** Instagram Reels / TikTok / YouTube Shorts | 15 seconds")
+
+        if st.button("🔄 Regenerate", key="regen_video", use_container_width=True):
+            st.rerun()
 
         st.code(video_concept_content, language="markdown")
 
