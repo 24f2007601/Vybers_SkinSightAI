@@ -13,7 +13,11 @@ from urllib.parse import urljoin
 import httpx
 from bs4 import BeautifulSoup
 
-from ..models import Product, SAMPLE_DOTKEY_PRODUCTS
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from models import Product, SAMPLE_DOTKEY_PRODUCTS
 
 
 class DotKeyCatalogExtractor:

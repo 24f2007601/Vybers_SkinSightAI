@@ -9,13 +9,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from ..models import Product, MarketingContent, ContentType, BRAND_GUIDELINES
-from ..insights.generator import MarketInsights
-from ..catalog.extractor import DotKeyCatalogExtractor
-from ..competitor.monitor import CompetitorMonitor
-from ..sentiment.analyzer import SentimentAnalyzer, ReviewCollector
-from ..insights.generator import InsightsGenerator, MarketInsights
-from ..content.generator import ContentGenerator, CONTENT_TEMPLATES
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from models import Product, MarketingContent, ContentType, BRAND_GUIDELINES
+from insights.generator import MarketInsights
+from catalog.extractor import DotKeyCatalogExtractor
+from competitor.monitor import CompetitorMonitor
+from sentiment.analyzer import SentimentAnalyzer, ReviewCollector
+from insights.generator import InsightsGenerator, MarketInsights
+from content.generator import ContentGenerator, CONTENT_TEMPLATES
 
 
 class DotKeyMarketIntelligence:

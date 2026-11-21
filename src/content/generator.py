@@ -9,12 +9,16 @@ from datetime import datetime
 from typing import Optional
 from string import Template
 
-from ..models import (
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from models import (
     Product, MarketingContent, ContentType, BrandGuidelines,
     BRAND_GUIDELINES, SAMPLE_DOTKEY_PRODUCTS
 )
-from ..insights.generator import MarketInsights
-from ..insights.generator import InsightsGenerator
+from insights.generator import MarketInsights
+from insights.generator import InsightsGenerator
 
 
 @dataclass
@@ -702,8 +706,8 @@ class ContentGenerator:
 
 
 async def main():
-    from ..models import SAMPLE_DOTKEY_PRODUCTS
-    from ..insights.generator import InsightsGenerator
+    from models import SAMPLE_DOTKEY_PRODUCTS
+    from insights.generator import InsightsGenerator
 
     # Generate insights first
     generator = InsightsGenerator(use_sample_data=True)

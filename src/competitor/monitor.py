@@ -9,7 +9,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from ..models import (
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from models import (
     CompetitorProduct, Platform, SAMPLE_COMPETITOR_PRODUCTS,
     SAMPLE_COMPETITOR_BRANDS, Product
 )
@@ -143,7 +147,7 @@ class CompetitorComparator:
         competitors: list[CompetitorProduct]
     ) -> dict:
         """Generate detailed comparison"""
-        from ..models import CompetitorComparison
+        from models import CompetitorComparison
 
         comparison = CompetitorComparison(
             dotkey_product_id=dotkey_product.id,
@@ -273,7 +277,7 @@ class CompetitorComparator:
 
 
 async def main():
-    from ..models import SAMPLE_DOTKEY_PRODUCTS
+    from models import SAMPLE_DOTKEY_PRODUCTS
 
     monitor = CompetitorMonitor(use_sample_data=True)
     comparator = CompetitorComparator()
