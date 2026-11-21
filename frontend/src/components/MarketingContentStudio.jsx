@@ -37,7 +37,6 @@ export default function MarketingContentStudio({ product, contentDeck }) {
 
   return (
     <div className="space-y-6">
-
       {/* ── Archetype Selector ── */}
       <div>
         <div className="nb-section-label">
@@ -75,7 +74,6 @@ export default function MarketingContentStudio({ product, contentDeck }) {
       {/* ── Asset Preview ── */}
       {activePiece && (
         <div className="nb-card overflow-hidden">
-
           {/* Card header */}
           <div
             className="px-5 py-4 border-b-2 border-black flex flex-wrap items-center justify-between gap-3"
