@@ -1,32 +1,25 @@
-# Core dependencies
-httpx>=0.25.0
-beautifulsoup4>=4.12.0
-lxml>=4.9.0
+# =============================================================================
+# VYBERS SkinSight-AI Production Dependencies
+# =============================================================================
 
-# NLP / Sentiment
-textblob>=0.17.1
+# Web API Framework & Server
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+python-multipart>=0.0.18
+pydantic>=2.0.0
+
+# HTTP Client
+httpx>=0.25.0
+
+# NLP & Sentiment Engine
+textblob>=0.18.0
 vaderSentiment>=3.3.2
 nltk>=3.8.0
 
-# Data processing
+# Data Processing
 numpy>=1.24.0
 pandas>=2.0.0
 
-# Web UI
-streamlit>=1.28.0
-
-# Async support
-asyncio-mqtt>=0.11.0
-
-# Optional: for real web scraping
-# playwright>=1.40.0
-# selenium>=4.10.0
-
-# LLM Integration
-google-generativeai>=0.3.0
-
-# Development
+# Development & Testing
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
-black>=23.0.0
-ruff>=0.1.0
