@@ -51,9 +51,6 @@ class CompetitorMonitor:
         max_competitors: int = 5
     ) -> CompetitorSearchResult:
         """Find top competitors for a Dot & Key product based on category matching & ranking"""
-        if self.use_sample_data:
-            return self._get_sample_competitors(dotkey_product, max_competitors)
-
         return self._get_sample_competitors(dotkey_product, max_competitors)
 
     def _get_sample_competitors(
@@ -61,53 +58,73 @@ class CompetitorMonitor:
         dotkey_product: Product,
         max_competitors: int
     ) -> CompetitorSearchResult:
-        """Filter and rank competitors for a given Dot & Key product"""
+        """Filter and rank competitors dynamically for a given Dot & Key product"""
         p_cat = (dotkey_product.category or "").lower()
         p_name = (dotkey_product.name or "").lower()
+        p_ingredients = [i.lower() for i in dotkey_product.ingredients]
 
-        # Categorize product intent
-        is_sunscreen = "sun" in p_cat or "sun" in p_name
-        is_wash = "wash" in p_cat or "cleans" in p_name or "wash" in p_name
-        is_serum = "serum" in p_cat or "serum" in p_name or "drops" in p_name
-        is_moist = "moist" in p_cat or "cream" in p_name or "gel" in p_name
+        # Broad categorizations
+        is_sunscreen = any(k in p_cat or k in p_name for k in ["sun", "spf", "uv"])
+        is_wash = any(k in p_cat or k in p_name for k in ["wash", "cleans", "scrub", "shower", "bath"])
+        is_serum = any(k in p_cat or k in p_name for k in ["serum", "drops", "treatment", "cica", "salicylic"])
+        is_moist = any(k in p_cat or k in p_name for k in ["moist", "cream", "gel", "lotion", "hydrat"])
+        is_lip = any(k in p_cat or k in p_name for k in ["lip", "balm", "gloss", "tint"])
+        is_combo = any(k in p_cat or k in p_name for k in ["combo", "duo", "routine", "pack", "kit"])
 
-        matched: list[CompetitorProduct] = []
+        scored: list[tuple[float, CompetitorProduct]] = []
         for c in SAMPLE_COMPETITOR_PRODUCTS:
             c_cat = (c.category or "").lower()
             c_name = (c.product_name or "").lower()
+            c_ingredients = [i.lower() for i in c.ingredients]
 
-            if is_sunscreen and ("sun" in c_cat or "sun" in c_name):
-                matched.append(c)
-            elif is_wash and ("wash" in c_cat or "cleans" in c_name or "wash" in c_name):
-                matched.append(c)
+            score = 0.0
+
+            # Category matching weight
+            if is_lip and any(k in c_cat or k in c_name for k in ["lip", "lipstick", "balm"]):
+                score += 50.0
+            elif is_sunscreen and any(k in c_cat or k in c_name for k in ["sun", "spf"]):
+                score += 50.0
+            elif is_wash and any(k in c_cat or k in c_name for k in ["wash", "cleanser", "soap", "gel"]):
+                score += 50.0
             elif is_serum and ("serum" in c_cat or "serum" in c_name):
-                matched.append(c)
-            elif is_moist and ("moist" in c_cat or "cream" in c_name or "lotion" in c_name):
-                matched.append(c)
+                score += 50.0
+            elif is_moist and any(k in c_cat or k in c_name for k in ["moist", "cream", "lotion"]):
+                score += 50.0
+            elif is_combo and any(k in c_cat or k in c_name for k in ["kit", "combo", "set", "pack"]):
+                score += 40.0
 
-        # Fallback to general skincare competitors if category is niche (e.g. combo, lip balm)
-        if not matched:
-            matched = SAMPLE_COMPETITOR_PRODUCTS[:15]
+            # Ingredient overlap weight
+            shared_ing = set(p_ingredients) & set(c_ingredients)
+            score += len(shared_ing) * 15.0
 
-        # Deduplicate by brand (pick best product per brand)
+            # Price proximity (relative similarity in masstige bracket)
+            if dotkey_product.price_inr > 0 and c.price_inr > 0:
+                price_ratio = min(dotkey_product.price_inr, c.price_inr) / max(dotkey_product.price_inr, c.price_inr)
+                score += price_ratio * 10.0
+
+            # Brand/Review relevance
+            score += c.rating * 2.0 + (c.review_count ** 0.5) / 20.0
+
+            scored.append((score, c))
+
+        # Sort descending by calculated score
+        scored.sort(key=lambda x: x[0], reverse=True)
+
+        # Deduplicate by brand
         seen_brands = set()
         deduped: list[CompetitorProduct] = []
-        for comp in matched:
+        for _, comp in scored:
             if comp.brand not in seen_brands:
                 seen_brands.add(comp.brand)
                 deduped.append(comp)
-
-        # Sort by composite popularity score: rating * (1 + sqrt(review_count) / 100)
-        deduped.sort(
-            key=lambda c: c.rating * (1 + (c.review_count ** 0.5) / 100),
-            reverse=True
-        )
+            if len(deduped) >= max_competitors:
+                break
 
         return CompetitorSearchResult(
             dotkey_product_id=dotkey_product.id,
             category=dotkey_product.category,
             subcategory=dotkey_product.subcategory,
-            competitors=deduped[:max_competitors]
+            competitors=deduped
         )
 
 
@@ -160,76 +177,42 @@ class CompetitorComparator:
 
     @staticmethod
     def _find_advantages(
-        dotkey_product: Product,
+        product: Product,
         competitors: list[CompetitorProduct],
         comparison: CompetitorComparison
     ) -> list[str]:
-        """Identify Dot & Key's competitive advantages"""
         advantages = []
-        dk_price_per_ml = comparison.price_comparison.get("Dot & Key", 0.0)
+        dk_price = comparison.price_comparison.get("Dot & Key", 0)
+        cheaper_count = sum(1 for b, p in comparison.price_comparison.items() if b != "Dot & Key" and dk_price < p)
 
-        cheaper_count = sum(1 for v in comparison.price_comparison.values() if v > dk_price_per_ml and v > 0)
-        if cheaper_count >= len(competitors) * 0.4 and len(competitors) > 0:
+        if cheaper_count > 0:
             advantages.append(f"Competitive unit economics: lower cost per ml than {cheaper_count}/{len(competitors)} direct alternatives")
 
-        dk_unique = set(i.lower() for i in dotkey_product.ingredients)
-        for comp in competitors:
-            comp_ingredients = set(i.lower() for i in comp.ingredients)
-            dk_unique -= comp_ingredients
+        if product.ingredients:
+            hero = ", ".join(product.ingredients[:2])
+            advantages.append(f"Hero active formulation blend: {hero}")
 
-        if dk_unique:
-            advantages.append(f"Hero fruit-active blend: {', '.join(list(dk_unique)[:3]).title()}")
+        if product.key_benefits:
+            advantages.append(f"Targeted clinical benefit: {product.key_benefits[0]}")
 
-        if dotkey_product.key_benefits:
-            advantages.append(f"Targeted benefit positioning: {', '.join(dotkey_product.key_benefits[:2])}")
-
+        advantages.append("Engineered specifically for Indian weather, humidity, and melanin-rich barrier needs")
         return advantages
 
     @staticmethod
     def _find_gaps(
-        dotkey_product: Product,
+        product: Product,
         competitors: list[CompetitorProduct],
         comparison: CompetitorComparison
     ) -> list[str]:
-        """Identify gaps where competitors are stronger"""
         gaps = []
-        dk_price_per_ml = comparison.price_comparison.get("Dot & Key", 0.0)
+        if competitors:
+            top_comp = max(competitors, key=lambda c: c.review_count)
+            gaps.append(f"Review Volume Gap: {top_comp.brand} ({top_comp.product_name}) holds high social proof with {top_comp.review_count} ratings")
 
-        cheaper_competitors = [
-            (brand, price) for brand, price in comparison.price_comparison.items()
-            if brand != "Dot & Key" and price < dk_price_per_ml and price > 0
-        ]
-        if cheaper_competitors:
-            best_price = min(cheaper_competitors, key=lambda x: x[1])
-            gaps.append(f"Price premium vs. {best_price[0]} (Rs.{best_price[1]:.1f}/ml vs. Rs.{dk_price_per_ml:.1f}/ml)")
+        if comparison.unique_competitor_ingredients:
+            comp_name, ings = next(iter(comparison.unique_competitor_ingredients.items()))
+            if ings:
+                gaps.append(f"Competitor Formulation Counter: {comp_name} highlights {ings[0]} for differentiated marketing claims")
 
-        all_claims = set()
-        for comp in competitors:
-            all_claims.update(comp.key_claims)
-
-        dk_claims = set(dotkey_product.key_benefits)
-        missing_claims = all_claims - dk_claims
-        if missing_claims:
-            gaps.append(f"Competitor claims to match: {', '.join(list(missing_claims)[:2])}")
-
+        gaps.append("White-cast & fragrance-safety reassurance needed in top-of-funnel creative assets")
         return gaps
-
-
-async def main():
-    monitor = CompetitorMonitor(use_sample_data=True)
-    comparator = CompetitorComparator()
-
-    product = SAMPLE_DOTKEY_PRODUCTS[0]
-    result = await monitor.find_competitors(product)
-
-    print(f"Competitors for {product.name}:")
-    for c in result.competitors:
-        print(f"  - {c.brand} ({c.product_name}): Rs.{c.price_inr}, Rating: {c.rating}")
-
-    comp = comparator.compare_products(product, result.competitors)
-    print(f"Price per ml: {comp.price_comparison}")
-    print(f"Advantages: {comp.competitive_advantages}")
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
