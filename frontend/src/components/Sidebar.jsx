@@ -102,11 +102,6 @@ export default function Sidebar({ activeTab, onTabChange, productName, category,
         )}
       </div>
 
-      {/* Bottom Status bar */}
-      <div className="p-3 bg-[#111116] border-t-2 border-black flex items-center justify-between text-[10px] text-gray-400 font-bold">
-        <span>FastAPI Engine</span>
-        <span className="text-emerald-400 font-black">Online (8000)</span>
-      </div>
     </aside>
   );
 }

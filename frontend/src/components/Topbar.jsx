@@ -27,10 +27,6 @@ export default function Topbar({ selectedProduct, isLoading }) {
             REAL-TIME INTEL SYNCED
           </div>
         )}
-
-        <div className="flex items-center gap-2 px-3.5 py-1.5 font-black text-xs border-2 border-black rounded-lg bg-[#FF4081] text-white shadow-[3px_3px_0px_#000]">
-          <span>⚡ HACKATHON BUILD</span>
-        </div>
       </div>
     </header>
   );
