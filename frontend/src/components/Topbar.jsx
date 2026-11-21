@@ -2,51 +2,34 @@ import React from "react";
 
 export default function Topbar({ selectedProduct, isLoading }) {
   return (
-    <header
-      className="h-14 flex items-center justify-between px-6 flex-shrink-0 bg-white border-b-2 border-black"
-      style={{ boxShadow: '0 2px 0 #000' }}
-    >
-      {/* Left: search mockup */}
-      <div
-        className="flex items-center gap-2 px-3 py-1.5 bg-nb-bg border-2 border-black rounded-nb text-xs font-medium text-nb-muted cursor-text"
-        style={{ boxShadow: '2px 2px 0 #000', minWidth: 220 }}
-      >
-        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-        </svg>
-        <span>Search intelligence…</span>
+    <header className="h-16 flex items-center justify-between px-6 bg-white border-b-2 border-black flex-shrink-0 shadow-[0_2px_0px_#000] z-10">
+      {/* Left: Product context banner */}
+      <div className="flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#FFF4F7] border-2 border-black rounded-lg shadow-[2px_2px_0px_#000]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#FF4081]"></span>
+          <span className="text-xs font-black text-black">DOT & KEY RESEARCH</span>
+        </div>
+        <div className="text-xs font-bold text-gray-500">
+          Viewing: <span className="text-black font-extrabold">{selectedProduct?.name || "Choose Product"}</span>
+        </div>
       </div>
 
-      {/* Right */}
+      {/* Right: Interactive badges */}
       <div className="flex items-center gap-3">
         {isLoading ? (
-          <span
-            className="flex items-center gap-2 px-3 py-1 font-black text-[11px] border-2 border-black rounded-nb bg-nb-yellow text-black"
-            style={{ boxShadow: '2px 2px 0 #000' }}
-          >
-            <span className="w-3 h-3 border-2 border-black rounded-full animate-spin" style={{ borderTopColor: 'transparent' }} />
-            ANALYZING…
-          </span>
+          <div className="flex items-center gap-2 px-3 py-1.5 border-2 border-black rounded-lg bg-yellow-300 text-black font-black text-xs shadow-[2px_2px_0px_#000]">
+            <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+            ANALYZING BENCHMARKS…
+          </div>
         ) : (
-          <span
-            className="flex items-center gap-2 px-3 py-1 font-black text-[11px] border-2 border-black rounded-nb bg-nb-green text-black"
-            style={{ boxShadow: '2px 2px 0 #000' }}
-          >
-            <span className="w-2 h-2 rounded-full bg-green-700" />
-            LIVE
-          </span>
+          <div className="flex items-center gap-2 px-3 py-1.5 border-2 border-black rounded-lg bg-emerald-300 text-black font-black text-xs shadow-[2px_2px_0px_#000]">
+            <span className="w-2 h-2 rounded-full bg-black"></span>
+            REAL-TIME INTEL SYNCED
+          </div>
         )}
 
-        {/* Brand chip */}
-        <div
-          className="flex items-center gap-2 px-3 py-1.5 font-black text-xs border-2 border-black rounded-nb text-white"
-          style={{ background: '#FF4081', boxShadow: '3px 3px 0 #000' }}
-        >
-          <div className="w-5 h-5 rounded-full border-2 border-white bg-white text-nb-pink flex items-center justify-center font-black text-[9px]"
-            style={{ color: '#FF4081' }}>
-            D
-          </div>
-          Dot & Key
+        <div className="flex items-center gap-2 px-3.5 py-1.5 font-black text-xs border-2 border-black rounded-lg bg-[#FF4081] text-white shadow-[3px_3px_0px_#000]">
+          <span>⚡ HACKATHON BUILD</span>
         </div>
       </div>
     </header>

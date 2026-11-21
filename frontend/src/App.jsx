@@ -56,17 +56,16 @@ export default function App() {
 
   const selectedProduct = products.find((p) => String(p.id) === String(selectedProductId));
 
-  const PAGE_TITLES = {
-    benchmarking: "Competitor Benchmarking",
-    sentiment:    "Customer Sentiment Analysis",
-    insights:     "Strategic Insights & SWOT",
-    content:      "Creative Content Studio",
-  };
+  const TABS = [
+    { id: "benchmarking", label: "Competitor Benchmarking", icon: "📊" },
+    { id: "sentiment",    label: "Sentiment Engine",       icon: "💬" },
+    { id: "insights",     label: "Strategic SWOT & Switcher", icon: "🎯" },
+    { id: "content",      label: "Creative Content Studio", icon: "⚡" },
+  ];
 
   return (
-    <div className="flex h-screen overflow-hidden">
-
-      {/* 1. Left sidebar — black, always visible */}
+    <div className="flex h-screen w-screen overflow-hidden bg-[#E8E8E8] font-sans">
+      {/* 1. Left Sidebar */}
       <Sidebar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -75,103 +74,75 @@ export default function App() {
         isLoading={isLoading}
       />
 
-      {/* 2. Product picker column */}
-      <div className="w-[240px] flex-shrink-0 flex flex-col overflow-hidden border-r-2 border-black">
-        <div
-          className="h-14 flex items-center px-4 bg-white border-b-2 border-black"
-          style={{ boxShadow: '0 2px 0 #000' }}
-        >
-          <span className="text-[9px] font-black uppercase tracking-widest text-nb-muted">Product Catalog</span>
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <ProductSelector
-            products={products}
-            selectedProductId={selectedProductId}
-            onSelect={(id) => setSelectedProductId(String(id))}
-          />
-        </div>
+      {/* 2. Middle Product Catalog Column */}
+      <div className="w-[280px] h-screen flex-shrink-0 flex flex-col overflow-hidden">
+        <ProductSelector
+          products={products}
+          selectedProductId={selectedProductId}
+          onSelect={(id) => setSelectedProductId(String(id))}
+        />
       </div>
 
-      {/* 3. Main content area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-
-        {/* Topbar */}
+      {/* 3. Main Workspace Area */}
+      <div className="flex-1 h-screen flex flex-col overflow-hidden bg-[#EAE8E0]">
         <Topbar selectedProduct={selectedProduct} isLoading={isLoading} />
 
-        {/* Scroll area */}
-        <div className="flex-1 overflow-y-auto p-6" style={{ background: '#E8E8E8' }}>
-
-          {/* Page header */}
-          <div className="mb-6">
-            {/* Tab filter row — matches reference image style */}
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-              <div>
-                <h1 className="text-xl font-black text-black">
-                  {PAGE_TITLES[activeTab]}
-                </h1>
-                {selectedProduct && (
-                  <p className="text-xs font-medium text-nb-muted mt-0.5">
-                    {selectedProduct.name} &nbsp;·&nbsp;
-                    {selectedProduct.category} &nbsp;·&nbsp;
-                    ₹{selectedProduct.price_inr} &nbsp;·&nbsp;
-                    {selectedProduct.size_ml}ml
-                  </p>
-                )}
+        {/* Content Workspace Scroll Area */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+          {/* Header Title & Tab Bar */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b-2 border-black">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-black bg-yellow-300 text-black shadow-[1px_1px_0px_#000]">
+                  AI INTELLIGENCE VIEW
+                </span>
+                <span className="text-xs font-bold text-gray-500">
+                  {selectedProduct?.category} · ₹{selectedProduct?.price_inr}
+                </span>
               </div>
+              <h1 className="text-2xl md:text-3xl font-black text-black tracking-tight">
+                {selectedProduct?.name || "Loading SKU Intelligence..."}
+              </h1>
+            </div>
 
-              {/* Tab switcher — neobrutalism pills */}
-              <div
-                className="flex items-center gap-1 p-1 bg-white border-2 border-black rounded-[10px]"
-                style={{ boxShadow: '3px 3px 0 #000' }}
-              >
-                {[
-                  { id: "benchmarking", label: "Benchmarks" },
-                  { id: "sentiment",    label: "Sentiment" },
-                  { id: "insights",     label: "SWOT" },
-                  { id: "content",      label: "Content" },
-                ].map((t) => (
+            {/* Neobrutalism Tab Selector */}
+            <div className="flex flex-wrap items-center gap-2 bg-white p-1.5 border-2 border-black rounded-xl shadow-[3px_3px_0px_#000]">
+              {TABS.map((t) => {
+                const isActive = activeTab === t.id;
+                return (
                   <button
                     key={t.id}
                     onClick={() => setActiveTab(t.id)}
-                    className="px-3 py-1.5 text-xs font-bold border-2 border-black rounded-nb transition-all duration-100"
-                    style={
-                      activeTab === t.id
-                        ? { background: '#FF4081', color: '#fff', boxShadow: '2px 2px 0 #000', transform: 'translate(-1px,-1px)' }
-                        : { background: 'transparent', color: '#000' }
-                    }
-                    onMouseEnter={(e) => { if (activeTab !== t.id) e.currentTarget.style.background = '#FFD6E5'; }}
-                    onMouseLeave={(e) => { if (activeTab !== t.id) e.currentTarget.style.background = 'transparent'; }}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-extrabold rounded-lg border-2 border-black transition-all ${
+                      isActive
+                        ? "bg-[#FF4081] text-white shadow-[2px_2px_0px_#000] -translate-x-0.5 -translate-y-0.5"
+                        : "bg-white text-black hover:bg-yellow-200"
+                    }`}
                   >
-                    {t.label}
+                    <span>{t.icon}</span>
+                    <span>{t.label}</span>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
-
-            {/* Error banner */}
-            {error && (
-              <div className="nb-alert-error mb-4 text-xs font-bold">
-                <span>⚠</span>
-                <span>{error}</span>
-              </div>
-            )}
           </div>
 
-          {/* Loading state */}
+          {/* Error Message */}
+          {error && (
+            <div className="p-4 border-2 border-black rounded-lg bg-red-300 text-black font-extrabold text-sm shadow-[3px_3px_0px_#000]">
+              ⚠️ {error}
+            </div>
+          )}
+
+          {/* Loading Indicator */}
           {isLoading ? (
-            <div
-              className="nb-card flex flex-col items-center justify-center h-64 bg-nb-yellow"
-              style={{ background: '#FDE047' }}
-            >
-              <div className="w-10 h-10 border-4 border-black rounded-full animate-spin mb-4"
-                style={{ borderTopColor: '#FF4081' }} />
-              <p className="text-sm font-black text-black">Running Market Intelligence Pipeline…</p>
-              <p className="text-xs font-medium text-nb-muted mt-1">
-                Benchmarking · Sentiment · SWOT · Acquisition
-              </p>
+            <div className="min-h-[400px] flex flex-col items-center justify-center p-8 border-2 border-black rounded-2xl bg-white shadow-[6px_6px_0px_#000]">
+              <div className="w-12 h-12 border-4 border-black border-t-[#FF4081] rounded-full animate-spin mb-4" />
+              <div className="text-lg font-black text-black">Crunching Skincare Market Intelligence…</div>
+              <div className="text-xs font-bold text-gray-500 mt-1">Extracting sentiment topics, price per ml, and counter-positioning angles</div>
             </div>
           ) : (
-            <div>
+            <div className="space-y-6">
               {activeTab === "benchmarking" && (
                 <CompetitorBenchmarkingTab
                   product={selectedProduct}
