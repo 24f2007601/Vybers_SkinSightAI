@@ -1,0 +1,40 @@
+/* Tailwind base styles */
+@tailwind base;
+
+/* Tailwind components */
+@tailwind components;
+
+/* Tailwind utilities */
+@tailwind utilities;
+
+/* Custom properties for design tokens */
+:root {
+  --color-primary: #E85D75;
+  --color-cream: #F5F0EB;
+  --color-teal: #4A90A4;
+  --color-background: #FFFFFF;
+  --color-surface: #FFF5FA;
+  --color-surface2: #E8E8E8;
+  --color-border: #E5E5E5;
+  --color-muted: #1A1A1A;
+  --color-text: #2D2D2D;
+  --color-primary-hover: #FF6B8A;
+  --color-primary-pressed: #FF4081;
+}
+
+/* Focus ring state */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
