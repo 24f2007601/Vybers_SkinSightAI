@@ -213,10 +213,23 @@ class BrandGuidelines:
     })
 
 
-# Sample data for testing and demo
-SAMPLE_DOTKEY_PRODUCTS = [
-    Product(
-        id="dk-001",
+# ---------------------------------------------------------------------------
+# Sample data — loaded from data/ CSVs via src/data/loader.py
+# Keep these imports here so existing code (e.g. insights/generator.py) that
+# does `from ..models import SAMPLE_DOTKEY_PRODUCTS` continues to work unchanged.
+# ---------------------------------------------------------------------------
+from .data.loader import (  # noqa: E402  (import not at top of file)
+    SAMPLE_COMPETITOR_BRANDS,
+    SAMPLE_COMPETITOR_PRODUCTS,
+    SAMPLE_DOTKEY_PRODUCTS,
+    SAMPLE_REVIEWS,
+)
+
+# ---------------------------------------------------------------------------
+# (deleted) hardcoded SAMPLE_* lists — now sourced from data/ CSVs
+# ---------------------------------------------------------------------------
+# fmt: off — the block below was removed; keeping this comment for git history
+# SAMPLE_DOTKEY_PRODUCTS = [Product(id="dk-001",
         name="Vitamin C + E Super Bright Face Wash",
         category="Face Wash",
         subcategory="Vitamin C",
