@@ -36,9 +36,14 @@ export default function MarketingContentStudio({ product, insights }) {
           <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-2">Content Type</h3>
           <div className="space-y-1">
             {contentTypes.map((ctype) => (
-              <label key={ctype.value} className="flex items-center gap-2 px-3 py-1.5 rounded border border-transparent hover:border-[var(--color-border)] transition-colors cursor-pointer ${
-                contentType === ctype.value ? "bg-[var(--color-primary)] text-white" : ""
-              }">
+              <label
+                key={ctype.value}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded border transition-colors cursor-pointer ${
+                  contentType === ctype.value
+                    ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)]"
+                    : "border-transparent hover:border-[var(--color-border)]"
+                }`}
+              >
                 <input
                   type="radio"
                   name="content-type"
@@ -57,9 +62,12 @@ export default function MarketingContentStudio({ product, insights }) {
           <h3 className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-2">Platform</h3>
           <div className="space-y-1">
             {platforms.map((plat) => (
-              <label key={plat.value} className="flex items-center gap-2 px-3 py-1.5 rounded border border-transparent hover:border-[var(--color-border)] transition-colors cursor-pointer ${
-                platform === plat.value ? "bg-[var(--color-primary)] text-white" : ""
-              }">
+              <label
+                key={plat.value}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded border transition-colors cursor-pointer border-transparent hover:border-[var(--color-border)] ${
+                  platform === plat.value ? "bg-[var(--color-primary)] text-white" : ""
+                }`}
+              >
                 <input
                   type="radio"
                   name="platform"
@@ -102,7 +110,7 @@ export default function MarketingContentStudio({ product, insights }) {
         <button
           onClick={handleGenerate}
           className={`inline-flex items-center gap-2 rounded-md font-medium transition-colors ${
-            isGenerating ? "opacity-50 cursor-not-allowed" : "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
+            isGenerating ? "opacity-50 cursor-not-allowed" : "bg-[var(--color-primary)] text-white hover:bg-[#c94d6a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-primary)]"
           }`}
           disabled={isGenerating}
         >
