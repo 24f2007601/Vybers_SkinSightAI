@@ -2,13 +2,13 @@
 
 **Project:** VYBERS SkinSight-AI  
 **Hackathon:** Vibe Coders Hackathon Edition 3 · 21 November 2026 · Hackathon MVP  
-**Status:** Aligned to Repository Structure & Codebase
+**Status:** Aligned to Decoupled Architecture (FastAPI Backend + React.js Frontend)
 
 ---
 
 ## 1. Goal & Mission
 
-An automated end-to-end Python pipeline and web interface where a user selects a Dot & Key product and triggers a synchronized two-stage workflow:
+An automated end-to-end platform featuring a **Python (FastAPI) intelligence engine** and an interactive **React.js web interface**. A marketer selects a Dot & Key product and triggers a synchronized two-stage workflow:
 
 1. **Research & Intelligence:** Extracts product facts, identifies top 5 benchmark competitors, normalizes pricing/ratings/ingredients, performs dual-model NLP sentiment analysis on reviews, and computes evidence-backed SWOT, market gaps, and trend forecasts.
 2. **Marketing Content Generation:** Ingests these quantified insights directly into a brand-safe content generator to produce static ads (IG/FB), e-commerce product listings, Amazon A+ modules, 30-second video scripts, storyboards, and short-form video concepts.
@@ -19,20 +19,34 @@ An automated end-to-end Python pipeline and web interface where a user selects a
 
 ## 2. System Architecture & Repository Layout
 
-The PRD maps directly to the modular codebase structure:
+The PRD maps directly to the decoupled full-stack architecture:
 
 ```
 VYBERS_SkinSight-AI/
 ├── AGENTS.MD/
-│   ├── PRD.md                   # This document — authoritative product requirements
+│   ├── PRD.md                   # This document — authoritative product requirements (React.js UI)
 │   ├── PROJECT_BRAIN.md         # Operational system brain, ontology, constraints & rules
-│   └── CONTEXT.md               # Indian BPC landscape, competitor matrix & brand guidelines
+│   ├── CONTEXT.md               # Indian BPC landscape, competitor matrix & brand guidelines
+│   └── dev-roadmap-1-2hr.md     # 90-120 minute hackathon sprint roadmap (React.js frontend focus)
 ├── data/
 │   ├── dotkey_products.csv      # Real Dot & Key catalog (extracted from Shopify endpoint)
 │   ├── india_cosmetics_brands_market_intel.csv # 50+ Indian cosmetics/skincare brand benchmark matrix
 │   ├── competitor_products.csv  # Curated competitor catalog with price, rating, review count, ingredients
 │   └── reviews.csv              # Customer reviews tagged with sentiment & topical mentions
-├── src/
+├── frontend/                    # Modern React.js Web Application
+│   ├── package.json             # React 18, Vite, Tailwind CSS, Lucide icons, Axios
+│   ├── vite.config.js           # Vite dev server with proxy to backend (/api -> localhost:8000)
+│   ├── tailwind.config.js       # Dot & Key brand theme tokens (primary, secondary, accent)
+│   └── src/
+│       ├── App.jsx              # Main dashboard container & tab navigation
+│       ├── components/
+│       │   ├── Navbar.jsx       # Header with Dot & Key branding and active product selector
+│       │   ├── CompetitorTab.jsx# Side-by-side cards, unit economics (₹/ml) & ingredient badges
+│       │   ├── SentimentTab.jsx # Sentiment gauges, topic breakdown, raw customer voice quotes
+│       │   ├── InsightsTab.jsx  # 4-quadrant SWOT matrix, market gaps, 90-day demand forecast
+│       │   └── ContentTab.jsx   # Marketing decks (Ads, A+ listing, 30s script, storyboard, Reels)
+│       └── services/api.js      # Axios client fetching from FastAPI /api/v1 endpoints
+├── src/                         # Python Backend Engine & API
 │   ├── models.py                # Type-safe dataclass models (Product, Review, SWOT, Content, Guidelines)
 │   ├── data/
 │   │   ├── __init__.py          # Data loader package exports
@@ -48,7 +62,7 @@ VYBERS_SkinSight-AI/
 │   ├── content/
 │   │   └── generator.py         # 8 multi-channel marketing content generators with claims guard
 │   └── api/
-│       └── main.py              # Central orchestrator & executive report exporter
+│       └── main.py              # FastAPI REST endpoints serving the React frontend
 ├── demo_output/                 # Generated per-product JSON output & SUMMARY_REPORT.md
 ├── requirements.txt             # Python dependencies
 └── README.md                    # Project documentation
@@ -125,11 +139,26 @@ Generates 8 high-converting, platform-specific content types matching `BrandGuid
 8. **Social Media Post (Instagram Carousel):** Multi-slide caption, UGC hook, hashtags, and accessibility alt-text.
 - **Claims Guard:** Enforces prohibition of forbidden keywords ("miracle", "permanent cure", "medical grade").
 
-### FR6: Pipeline Orchestration & Output Export (`src/api/main.py`)
-- Runs end-to-end async batch processing for all products or an isolated product ID.
-- Exports results to:
-  - Per-product structured JSON in `demo_output/<product_id>_<product_name>.json`.
-  - Comprehensive executive Markdown report in `demo_output/SUMMARY_REPORT.md`.
+### FR6: React.js UI & Frontend Specifications (`frontend/`)
+- Single-page application built with **React.js + Vite + Tailwind CSS**.
+- **Visual Language:** Custom-tailored to Dot & Key brand tokens:
+  - Primary Pink: `#E85D75`
+  - Secondary Cream: `#F5F0EB`
+  - Accent Teal: `#4A90A4`
+  - Dark Charcoal: `#2D2D2D`
+- **Dashboard Views / Tabs:**
+  1. **Navigation & Selector:** Product dropdown with thumbnail, category badge, and instant API trigger.
+  2. **Competitor Benchmarking:** Side-by-side cards showing price/ml, ratings, review volume, and shared vs unique ingredient tags.
+  3. **Voice of Customer (Sentiment):** Sentiment breakdown bars, topical sentiment heatmaps, and expandable customer quotes.
+  4. **Strategic Insights (SWOT):** Color-coded 4-quadrant SWOT grid with evidence pills, identified market gaps, and 90-day demand forecast meter.
+  5. **Marketing Content Studio:** Tabbed copy generator (Instagram Ad, Amazon A+, 30s Script, Storyboard, Reels Concept) with one-click "Copy to Clipboard" and markdown export.
+
+### FR7: Backend API Layer (`src/api/main.py`)
+- FastAPI application serving structured JSON responses to the React frontend:
+  - `GET /api/v1/products`: List of all available Dot & Key products.
+  - `GET /api/v1/products/{id}/insights`: Full competitor benchmarking, sentiment, and SWOT payload.
+  - `GET /api/v1/products/{id}/content`: Generated multi-platform marketing content deck.
+  - `POST /api/v1/pipeline/run`: Triggers full end-to-end intelligence pipeline.
 
 ---
 
@@ -137,13 +166,13 @@ Generates 8 high-converting, platform-specific content types matching `BrandGuid
 
 | In Scope (P0 - Implemented) | In Scope (P1 - Polish) | Deliberately Out of Scope |
 |---|---|---|
-| Complete async Python pipeline | Streamlit web UI | Video pixel rendering / AI video gen |
-| Real Dot & Key catalog extraction | Real-time scraper refresh trigger | Complex database setup (Postgres/Redis) |
-| Multi-competitor benchmark comparison | Zip bundle exporter for creatives | Financial/stock market sales prediction |
-| NLP Sentiment & 16-topic classification | Aspect trend timeline (recent vs old) | Authenticated user logins & RBAC |
-| Evidence-backed SWOT & market gaps | | Heavy multi-agent orchestration |
-| 8 distinct marketing content types | | |
-| JSON & Markdown output generation | | |
+| Complete async Python backend engine | React UI live export to PDF/Docx | Video pixel rendering / AI video gen |
+| FastAPI REST endpoints (`/api/v1/*`) | Custom brand theme color picker | Complex database setup (Postgres/Redis) |
+| React.js (Vite + Tailwind CSS) Dashboard | Dark / Light mode toggle | Financial/stock market sales prediction |
+| Multi-competitor benchmark comparison | Historical aspect trend graph | Authenticated user logins & RBAC |
+| NLP Sentiment & 16-topic classification | | Heavy multi-agent orchestration |
+| Evidence-backed SWOT & market gaps | | |
+| 8 distinct marketing content types in UI | | |
 
 ---
 
@@ -159,16 +188,13 @@ Generates 8 high-converting, platform-specific content types matching `BrandGuid
 ## 7. Execution Commands
 
 ```bash
-# 1. Install dependencies
+# Terminal 1: Backend FastAPI Server
 pip install -r requirements.txt
+uvicorn src.api.main:app --reload --port 8000
 
-# 2. Run the complete end-to-end pipeline
-python -m src.api.main
-
-# 3. Test individual modules
-python -m src.catalog.extractor
-python -m src.competitor.monitor
-python -m src.sentiment.analyzer
-python -m src.insights.generator
-python -m src.content.generator
+# Terminal 2: Frontend React.js Application
+cd frontend
+npm install
+npm run dev
+# React app opens at http://localhost:5173
 ```

@@ -3,32 +3,55 @@
 ## 1. Executive Summary & Objective
 - **Project:** VYBERS SkinSight-AI
 - **Context:** Vibe Coders Hackathon Edition 3 (Dot & Key Problem Statement).
-- **Core Mission:** An end-to-end, async AI market intelligence & marketing content generation pipeline for Indian beauty and personal care (BPC), centered on **Dot & Key**.
+- **Core Mission:** An end-to-end AI market intelligence & marketing content generation platform for Indian beauty and personal care (BPC), centered on **Dot & Key**.
+- **Architecture Overview:** Decoupled modern stack:
+  - **Backend API Engine:** Python (FastAPI / Uvicorn + Async pipeline).
+  - **Frontend UI:** Modern **React.js** (Vite / Tailwind CSS / Lucide icons).
 - **Transformation Pipeline:**
-  `Product Catalog + Competitor Intelligence + Reviews` ➔ `Sentiment Analysis (NLP)` ➔ `SWOT & Market Gaps & Trends` ➔ `Marketing Content (8 Multi-channel Formats)` ➔ `JSON & Markdown Executive Reports`.
+  `Product Catalog + Competitor Intelligence + Reviews` ➔ `Sentiment Analysis (NLP)` ➔ `SWOT & Market Gaps & Trends` ➔ `Marketing Content (8 Multi-channel Formats)` ➔ `REST API / JSON & Markdown Reports` ➔ `Interactive React UI Dashboard`.
 
 ---
 
-## 2. Repository Layout & Architecture
+## 2. Repository Layout & Full-Stack Architecture
 ```
 VYBERS_SkinSight-AI/
 ├── AGENTS.MD/
+│   ├── PRD.md                   # Full product requirements with React.js frontend specifications
 │   ├── PROJECT_BRAIN.md         # Fast-read system brain, ontology, constraints & operational guidelines
-│   └── CONTEXT.md               # Deep domain context, schemas, market landscape & data catalogs
+│   ├── CONTEXT.md               # Deep domain context, schemas, market landscape & data catalogs
+│   └── dev-roadmap-1-2hr.md     # 90-120 minute hackathon sprint roadmap (React.js frontend focus)
 ├── data/
 │   ├── dotkey_products.csv      # Real Dot & Key catalog (30 products extracted from Shopify API)
 │   ├── india_cosmetics_brands_market_intel.csv # 50+ Indian cosmetics & skincare brands, reviews & competitors
 │   ├── competitor_products.csv  # Benchmark competitors with pricing, ratings & ingredients
 │   └── reviews.csv              # Customer reviews labeled with sentiment, topics & pain points
-├── src/
+├── frontend/                    # Modern React.js Web Application
+│   ├── package.json             # React 18, Vite, Tailwind CSS, Lucide icons, Axios
+│   ├── vite.config.js           # Vite dev server with proxy to backend (/api -> localhost:8000)
+│   ├── tailwind.config.js       # Dot & Key brand theme tokens (primary, secondary, accent)
+│   └── src/
+│       ├── App.jsx              # Main dashboard container & tab navigation
+│       ├── components/
+│       │   ├── Navbar.jsx       # Header with Dot & Key branding and active product selector
+│       │   ├── CompetitorTab.jsx# Side-by-side cards, unit economics (₹/ml) & ingredient badges
+│       │   ├── SentimentTab.jsx # Sentiment gauges, topic breakdown, raw customer voice quotes
+│       │   ├── InsightsTab.jsx  # 4-quadrant SWOT matrix, market gaps, 90-day demand forecast
+│       │   └── ContentTab.jsx   # Marketing decks (Ads, A+ listing, 30s script, storyboard, Reels)
+│       └── services/api.js      # Axios client fetching from FastAPI /api/v1 endpoints
+├── src/                         # Python Backend Engine & API
 │   ├── models.py                # Type-safe domain models (Product, Review, SWOT, Content, Guidelines)
+│   ├── data/
+│   │   ├── __init__.py          # Data loader exports
+│   │   └── loader.py            # Hydrates CSVs into dataclasses with caching
 │   ├── catalog/extractor.py     # Product extraction (live Shopify JSON-LD / CSV-backed)
 │   ├── competitor/monitor.py    # Multi-platform competitor matching, price/ml & gap evaluation
 │   ├── sentiment/analyzer.py    # VADER + TextBlob hybrid sentiment & 16-class topical taxonomy
 │   ├── insights/generator.py    # Automated SWOT, gap identification, 90-day demand forecast & strategy
 │   ├── content/generator.py     # 8 marketing content archetypes across IG, FB, Amazon, YouTube
-│   └── api/main.py              # Pipeline orchestrator & report exporter
-└── requirements.txt
+│   └── api/
+│       └── main.py              # FastAPI application / REST API endpoints serving React frontend
+├── demo_output/                 # Generated per-product JSON output & SUMMARY_REPORT.md
+└── requirements.txt             # Python dependencies (fastapi, uvicorn, pydantic, textblob, vaderSentiment)
 ```
 
 ---
@@ -85,5 +108,7 @@ Supported Content Types:
 
 1. **Do not re-read large raw files:** Use `data/dotkey_products.csv` and `data/india_cosmetics_brands_market_intel.csv` schemas outlined in `CONTEXT.md` rather than loading entire CSVs into conversation memory.
 2. **Deterministic Schemas:** Treat all dataclasses in `src/models.py` as strict schemas. Never invent ad-hoc JSON structures when models already exist.
-3. **Execution Entrypoint:** Run pipeline via `python -m src.api.main` (or individual module test blocks `python -m src.sentiment.analyzer`, etc.).
-4. **Data Isolation:** All raw inputs reside in `data/`, business logic in `src/`, output artifacts in `demo_output/` or `output/`.
+3. **Execution Entrypoints:**
+   - **Backend API:** `uvicorn src.api.main:app --reload --port 8000` (or `python -m src.api.main`).
+   - **React Frontend:** `cd frontend && npm run dev` (running on `http://localhost:5173`).
+4. **Data Isolation:** All raw inputs reside in `data/`, business logic in `src/`, UI presentation in `frontend/`, and output artifacts in `demo_output/`.

@@ -53,16 +53,16 @@ Pre-annotated sentiment and topical customer feedback records across Amazon, Fli
 
 ---
 
-## 4. Dot & Key Brand Guide Guidelines (`BrandGuidelines`)
+## 4. Dot & Key Brand Guidelines (`BrandGuidelines`)
 
 - **Tone & Voice:** Friendly, conversational, scientific yet accessible, empowering, transparent.
 - **Brand Identity:** Fruit-forward + dermatological active synergy ("Science meets Nature").
 - **Target Demographics:** Women and men aged 18–35, urban India (Tier 1 & Tier 2 metros), looking for efficacious, aesthetic, clean personal care.
-- **Visual Palette:**
-  - Primary Pink: `#E85D75`
-  - Secondary Cream: `#F5F0EB`
-  - Ocean Accent: `#4A90A4`
-  - Charcoal Text: `#2D2D2D`
+- **Visual Palette (Tailwind Tokens in React.js):**
+  - Primary Pink: `#E85D75` (`bg-primary`, `text-primary`)
+  - Secondary Cream: `#F5F0EB` (`bg-secondary`, `border-secondary`)
+  - Ocean Accent: `#4A90A4` (`bg-accent`, `text-accent`)
+  - Charcoal Text: `#2D2D2D` (`text-charcoal`)
   - Pure Canvas: `#FFFFFF`
 - **Prohibited & Restricted Copy:**
   - ❌ NEVER use: "miracle cure", "instant permanent fix", "100% white skin", "medical grade", "treats all diseases".
@@ -70,12 +70,13 @@ Pre-annotated sentiment and topical customer feedback records across Amazon, Fli
 
 ---
 
-## 5. Standard Output Contracts
+## 5. Standard Output & API Response Contracts
+
+### REST API Endpoints (Consumed by React Frontend)
+- `GET /api/v1/products`: Returns list of available Dot & Key products for the selector dropdown.
+- `GET /api/v1/products/{id}/insights`: Full competitor benchmarking, customer sentiment breakdown, SWOT quadrants, and market gaps.
+- `GET /api/v1/products/{id}/content`: Multi-platform generated content dictionary (Instagram ad, Amazon listing, 30s ad script, storyboard, Reels concept).
+
+### File System Exports
 - **Per-product JSON:** `<output_dir>/<product_id>_<product_name>.json`
-- **Consolidated Executive Brief:** `<output_dir>/SUMMARY_REPORT.md` containing:
-  1. Executive Summary & Timestamp.
-  2. Product by Product SWOT Matrix.
-  3. Identified Market Gaps & Actionable Solution.
-  4. 90-Day Trend & Demand Forecasting.
-  5. Top Customer Praises & Complaints.
-  6. Multi-Channel Marketing Content Deck.
+- **Consolidated Executive Brief:** `<output_dir>/SUMMARY_REPORT.md`
