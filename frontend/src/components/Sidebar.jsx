@@ -73,15 +73,10 @@ export default function Sidebar({ activeTab, onTabChange, productName, category,
       <div className="p-3 m-3 bg-[#181820] border-2 border-black rounded-xl shadow-[3px_3px_0px_#000]">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[9px] font-black uppercase tracking-wider text-gray-400">Target Product</span>
-          {isLoading ? (
+          {isLoading && (
             <span className="flex items-center gap-1 text-[9px] font-black text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded border border-yellow-400/30">
               <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
               COMPUTING
-            </span>
-          ) : (
-            <span className="flex items-center gap-1 text-[9px] font-black text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded border border-emerald-400/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              LIVE ENGINE
             </span>
           )}
         </div>
