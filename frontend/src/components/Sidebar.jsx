@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const NAV_ITEMS = [
   { id: "benchmarking", icon: "📊", label: "Competitor Intel", tag: "Live" },
@@ -8,59 +8,105 @@ const NAV_ITEMS = [
 ];
 
 export default function Sidebar({ activeTab, onTabChange, productName, category, isLoading }) {
-  return (
-    <aside className="w-[240px] h-screen flex-shrink-0 flex flex-col bg-[#0F0F12] border-r-2 border-black select-none z-20">
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
+  const toggleTheme = () => {
+    const next = !isDarkMode;
+    setIsDarkMode(next);
+    if (next) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
+  return (
+    <aside
+      className={`h-screen flex-shrink-0 flex flex-col border-r-4 border-black select-none z-20 transition-all duration-200 ${
+        isCollapsed ? "w-[72px]" : "w-[260px]"
+      } ${isDarkMode ? "bg-[#181820] text-white" : "bg-[#FFFDF9] text-black"}`}
+    >
       {/* Brand Header */}
-      <div className="p-4 border-b-2 border-black bg-[#16161B] flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div
-            className="w-10 h-10 flex items-center justify-center font-black text-sm text-black border-2 border-black rounded-lg shadow-[2px_2px_0px_#000]"
-            style={{ background: "#FF4081" }}
-          >
+      <div className={`p-3.5 border-b-4 border-black flex items-center justify-between ${isDarkMode ? "bg-[#21212B]" : "bg-[#FFE6EE]"}`}>
+        <div className="flex items-center gap-2.5 overflow-hidden">
+          <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center font-black text-sm text-black border-2 border-black rounded-lg shadow-[3px_3px_0px_#000] bg-[#FF4081]">
             D&K
           </div>
-          <div>
-            <div className="text-sm font-black text-white tracking-wide flex items-center gap-1.5">
-              SkinSight
-              <span className="text-[9px] px-1.5 py-0.2 bg-[#FF4081] text-white border border-black font-extrabold rounded">AI</span>
+          {!isCollapsed && (
+            <div className="truncate">
+              <div className="text-sm font-black tracking-wide flex items-center gap-1.5">
+                SkinSight
+                <span className="text-[9px] px-1.5 py-0.2 bg-[#FF4081] text-white border-2 border-black font-black rounded shadow-[1px_1px_0px_#000]">
+                  AI
+                </span>
+              </div>
+              <div className={`text-[10px] font-black uppercase tracking-wider ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+                Dot & Key Intel
+              </div>
             </div>
-            <div className="text-[10px] font-bold text-gray-400">Dot & Key Intelligence</div>
-          </div>
+          )}
+        </div>
+
+        {/* Action Controls: Small Theme Toggle & Retract Button */}
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={toggleTheme}
+            title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+            className={`w-7 h-7 flex-shrink-0 flex items-center justify-center border-2 border-black rounded-md text-xs shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-transform ${
+              isDarkMode ? "bg-[#FFE600] text-black hover:bg-yellow-300" : "bg-white text-black hover:bg-gray-100"
+            }`}
+          >
+            {isDarkMode ? "☀️" : "🌙"}
+          </button>
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className={`w-7 h-7 flex-shrink-0 flex items-center justify-center border-2 border-black rounded-md font-black text-xs shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-transform ${
+              isDarkMode ? "bg-white text-black hover:bg-gray-200" : "bg-white text-black hover:bg-gray-100"
+            }`}
+          >
+            {isCollapsed ? "»" : "«"}
+          </button>
         </div>
       </div>
 
       {/* Navigation Menu */}
-      <div className="px-3 pt-5 pb-2">
-        <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-3 mb-2.5 flex items-center justify-between">
-          <span>INTELLIGENCE MODULES</span>
-        </div>
-        <nav className="space-y-1.5">
+      <div className="px-2.5 pt-4 pb-2">
+        {!isCollapsed && (
+          <div className={`text-[10px] font-black uppercase tracking-widest px-2 mb-2 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+            MODULES
+          </div>
+        )}
+        <nav className="space-y-2">
           {NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => onTabChange(item.id)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 font-bold text-xs text-left transition-all duration-100 border-2 rounded-lg ${
+                title={isCollapsed ? item.label : undefined}
+                className={`w-full flex items-center ${isCollapsed ? "justify-center px-0 py-2.5" : "justify-between px-3 py-2.5"} font-black text-xs text-left border-2 border-black rounded-lg transition-transform ${
                   isActive
-                    ? "bg-[#FF4081] text-white border-black shadow-[3px_3px_0px_#000] -translate-x-0.5 -translate-y-0.5"
-                    : "bg-[#16161B] text-gray-300 border-transparent hover:border-black hover:bg-[#202028] hover:text-white"
+                    ? "bg-[#FF4081] text-white shadow-[3px_3px_0px_#000] -translate-x-0.5 -translate-y-0.5"
+                    : isDarkMode
+                    ? "bg-[#21212B] text-gray-200 hover:bg-[#2C2C3A] shadow-[2px_2px_0px_#000]"
+                    : "bg-white text-black hover:bg-[#FFF0F5] shadow-[2px_2px_0px_#000]"
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <span className="text-sm">{item.icon}</span>
-                  <span className="font-extrabold tracking-tight">{item.label}</span>
+                <div className="flex items-center gap-2.5 truncate">
+                  <span className="text-sm flex-shrink-0">{item.icon}</span>
+                  {!isCollapsed && <span className="tracking-tight truncate">{item.label}</span>}
                 </div>
-                <span
-                  className={`text-[9px] font-black px-1.5 py-0.5 rounded border ${
-                    isActive
-                      ? "bg-black text-white border-white/20"
-                      : "bg-[#252530] text-gray-400 border-black/50"
-                  }`}
-                >
-                  {item.tag}
-                </span>
+                {!isCollapsed && (
+                  <span
+                    className={`text-[9px] font-black px-1.5 py-0.5 rounded border border-black shadow-[1px_1px_0px_#000] ${
+                      isActive ? "bg-black text-white" : isDarkMode ? "bg-black text-yellow-300" : "bg-[#FFE600] text-black"
+                    }`}
+                  >
+                    {item.tag}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -69,34 +115,44 @@ export default function Sidebar({ activeTab, onTabChange, productName, category,
 
       <div className="flex-1" />
 
-      {/* Active SKU Card */}
-      <div className="p-3 m-3 bg-[#181820] border-2 border-black rounded-xl shadow-[3px_3px_0px_#000]">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[9px] font-black uppercase tracking-wider text-gray-400">Target Product</span>
-          {isLoading && (
-            <span className="flex items-center gap-1 text-[9px] font-black text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded border border-yellow-400/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-              COMPUTING
+      {/* Active SKU Target Card */}
+      {!isCollapsed ? (
+        <div className={`p-3 m-2.5 border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] ${isDarkMode ? "bg-[#21212B]" : "bg-white"}`}>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className={`text-[9px] font-black uppercase tracking-wider ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+              Target SKU
             </span>
-          )}
-        </div>
-        
-        {productName ? (
-          <div>
-            <div className="text-xs font-black text-white leading-snug line-clamp-2 mb-1.5">
-              {productName}
-            </div>
-            {category && (
-              <span className="inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#FF4081]/20 text-[#FF4081] border border-[#FF4081]/30">
-                {category}
+            {isLoading && (
+              <span className="text-[9px] font-black text-black bg-yellow-300 border border-black px-1.5 py-0.2 rounded shadow-[1px_1px_0px_#000] animate-pulse">
+                SYNCING…
               </span>
             )}
           </div>
-        ) : (
-          <div className="text-xs text-gray-400 font-bold">Pick an SKU from the catalog</div>
-        )}
-      </div>
-
+          {productName ? (
+            <div>
+              <div className="text-xs font-black leading-snug line-clamp-2 mb-1">
+                {productName}
+              </div>
+              {category && (
+                <span className="inline-block text-[9px] font-black uppercase px-2 py-0.5 rounded border border-black bg-[#FF4081] text-white shadow-[2px_2px_0px_#000]">
+                  {category}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className={`text-xs font-bold ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Pick an SKU from the catalog</div>
+          )}
+        </div>
+      ) : (
+        <div className="p-2 flex justify-center">
+          <div
+            className="w-10 h-10 flex items-center justify-center font-black text-xs border-2 border-black rounded-lg shadow-[2px_2px_0px_#000] bg-[#FFE600]"
+            title={productName || "Target SKU"}
+          >
+            SKU
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

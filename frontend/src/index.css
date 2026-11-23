@@ -11,8 +11,37 @@
     min-height: 100vh;
   }
 
+  html.dark, html.dark body {
+    background-color: #121216;
+    color: #FFFFFF;
+  }
+
+  /* In dark mode, invert the workspace background subtly while keeping neobrutalist borders */
+  html.dark .bg-\[\#EAE8E0\] {
+    background-color: #1A1A22 !important;
+  }
+
+  html.dark .bg-white {
+    background-color: #21212B !important;
+    color: #FFFFFF !important;
+  }
+
+  html.dark .text-black {
+    color: #FFFFFF !important;
+  }
+
+  html.dark .text-gray-500, html.dark .text-gray-600 {
+    color: #9CA3AF !important;
+  }
+
+  html.dark input, html.dark select, html.dark textarea {
+    background-color: #2A2A38 !important;
+    color: #FFFFFF !important;
+  }
+
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: #E8E8E8; }
+  html.dark ::-webkit-scrollbar-track { background: #121216; }
   ::-webkit-scrollbar-thumb { background: #000; }
 }
 
