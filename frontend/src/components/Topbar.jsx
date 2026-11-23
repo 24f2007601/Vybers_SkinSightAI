@@ -16,15 +16,10 @@ export default function Topbar({ selectedProduct, isLoading }) {
 
       {/* Right: Interactive badges */}
       <div className="flex items-center gap-3">
-        {isLoading ? (
+        {isLoading && (
           <div className="flex items-center gap-2 px-3 py-1.5 border-2 border-black rounded-lg bg-yellow-300 text-black font-black text-xs shadow-[2px_2px_0px_#000]">
             <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
             ANALYZING BENCHMARKS…
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 px-3 py-1.5 border-2 border-black rounded-lg bg-emerald-300 text-black font-black text-xs shadow-[2px_2px_0px_#000]">
-            <span className="w-2 h-2 rounded-full bg-black"></span>
-            REAL-TIME INTEL SYNCED
           </div>
         )}
       </div>
