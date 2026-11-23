@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
 const NAV_ITEMS = [
-  { id: "benchmarking", icon: "📊", label: "Competitor Intel", tag: "Live" },
-  { id: "sentiment",    icon: "💬", label: "Customer Voice", tag: "NLP" },
-  { id: "insights",     icon: "🎯", label: "SWOT & Strategy", tag: "AI" },
-  { id: "content",      icon: "⚡", label: "Creative Studio", tag: "9 Decks" },
+  { id: "benchmarking", icon: "📊", label: "Competitor Intel" },
+  { id: "sentiment",    icon: "💬", label: "Customer Voice" },
+  { id: "insights",     icon: "🎯", label: "SWOT & Strategy" },
+  { id: "content",      icon: "⚡", label: "Creative Studio" },
 ];
 
 export default function Sidebar({ activeTab, onTabChange, productName, category, isLoading }) {
@@ -98,15 +98,6 @@ export default function Sidebar({ activeTab, onTabChange, productName, category,
                   <span className="text-sm flex-shrink-0">{item.icon}</span>
                   {!isCollapsed && <span className="tracking-tight truncate">{item.label}</span>}
                 </div>
-                {!isCollapsed && (
-                  <span
-                    className={`text-[9px] font-black px-1.5 py-0.5 rounded border border-black shadow-[1px_1px_0px_#000] ${
-                      isActive ? "bg-black text-white" : isDarkMode ? "bg-black text-yellow-300" : "bg-[#FFE600] text-black"
-                    }`}
-                  >
-                    {item.tag}
-                  </span>
-                )}
               </button>
             );
           })}
