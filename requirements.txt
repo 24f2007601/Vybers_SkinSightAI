@@ -2,26 +2,26 @@
 # VYBERS SkinSight-AI Production Dependencies
 # =============================================================================
 
-# Web API Framework & Server
+# Web API Framework & Async Server
 fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
 python-multipart>=0.0.18
 pydantic>=2.0.0
 
-# HTTP Client & Parsing
+# HTTP Client, Web Scraping & HTML Parsing
 httpx>=0.25.0
 beautifulsoup4>=4.12.0
 lxml>=4.9.0
 
-# NLP & Sentiment Engine
+# Natural Language Processing & Sentiment Analysis
 textblob>=0.18.0
 vaderSentiment>=3.3.2
 nltk>=3.8.0
 
-# Data Processing
+# Data Modeling & Math
 numpy>=1.24.0
 pandas>=2.0.0
 
-# Development & Testing
+# Testing & Quality Assurance
 pytest>=7.4.0
 pytest-asyncio>=0.21.0

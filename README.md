@@ -60,14 +60,55 @@ dotkey-market-intel/
 7. **Social Media Post** (Instagram carousel)
 8. **Email Campaign** (extensible)
 
+## 📦 System Requirements & Dependencies
+
+### Prerequisites
+- **Python**: `3.10+` (compatible with 3.10, 3.11, 3.12, 3.13, 3.14)
+- **Node.js**: `18.x+` & `npm 9+` (for Frontend React UI)
+
+### Backend Requirements (`requirements.txt`)
+| Category | Packages | Purpose |
+| :--- | :--- | :--- |
+| **API Server** | `fastapi`, `uvicorn[standard]`, `python-multipart`, `pydantic` | High-performance REST endpoints, data validation, CORS |
+| **Scraping & Web** | `httpx`, `beautifulsoup4`, `lxml` | Asynchronous catalog extraction, schema parsing |
+| **NLP & Sentiment** | `textblob`, `vaderSentiment`, `nltk` | Customer sentiment scoring, review topic extraction |
+| **Data Processing** | `pandas`, `numpy` | Competitive market intel dataset parsing, unit economics |
+| **Testing** | `pytest`, `pytest-asyncio` | Test runner and async test lifecycle |
+
+### Frontend Requirements (`frontend/package.json`)
+- **React 18** with **Vite**
+- **Tailwind CSS** (Neobrutalism styling system)
+- **React Router DOM v6** (Client-side routing)
+- **Lucide React** (UI Icons)
+
 ## 🚀 Quick Start
 
+### 1. Backend Setup
 ```bash
+# Clone the repository
+git clone https://github.com/24f2007601/Vybers_SkinSightAI.git
+cd Vybers_SkinSightAI
+
+# Create and activate virtual environment
+python -m venv .venv
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
+
 # Install dependencies
 pip install -r requirements.txt
 
-# Run demo (uses sample data)
-python -m src.api.main
+# Start the FastAPI engine (Port 8000)
+uvicorn src.api.main:app --reload --port 8000
+```
+
+### 2. Frontend Setup
+```bash
+# In a separate terminal:
+cd frontend
+npm install
+npm run dev
 ```
 
 ## 📁 Sample Data Included
