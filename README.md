@@ -111,6 +111,21 @@ npm install
 npm run dev
 ```
 
+### 3. Unified Docker Run (Single Container)
+Build and run the entire application (React UI + FastAPI) on port 8000:
+```bash
+docker build -t skinsight-ai .
+docker run -p 8000:8000 skinsight-ai
+```
+Open `http://localhost:8000` in your browser.
+
+### 4. Instant Public URL via Cloudflare Tunnel
+Share your local app online with zero server costs or port-forwarding:
+```bash
+cloudflared tunnel --url http://localhost:8000
+```
+> 📖 See [docs/CLOUDFLARE_GUIDE.md](docs/CLOUDFLARE_GUIDE.md) for full step-by-step instructions.
+
 ## 📁 Sample Data Included
 
 The system includes realistic sample data for immediate testing:
