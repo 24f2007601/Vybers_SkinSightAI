@@ -2,7 +2,10 @@
  * API Client Service connecting React frontend to FastAPI backend
  */
 
-const BASE_URL = "/api/v1";
+// Use VITE_API_URL environment variable if provided (production on Vercel),
+// otherwise default to '/api/v1' for Vite local proxy in development.
+const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/+$/, '') : '';
+const BASE_URL = API_HOST ? `${API_HOST}/api/v1` : '/api/v1';
 
 export async function fetchProducts() {
   const res = await fetch(`${BASE_URL}/products`);
